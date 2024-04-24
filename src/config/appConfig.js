@@ -1,0 +1,22 @@
+export const sideBarMenu = [
+    {
+        name:"Users",
+        index:0,
+        icon:"bx-user"
+    },
+    {
+        name:"Coupons",
+        index:1,
+        icon:"bx-gift"
+    },
+    {
+        name:"Notifications",
+        index:2,
+        icon:"bx-bell"
+    },
+    {
+        name:"Reports",
+        index:3,
+        icon:"bx-file"
+    }
+]
