@@ -4,6 +4,7 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
+  LinearProgress,
   Stack,
   TextField,
 } from "@mui/material";
@@ -17,9 +18,11 @@ const Coupon = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [expiryDate, setExpiryDate] = useState(dayjs(new Date()));
   const [discountPercentage, setDiscountPercentage] = useState("");
+  const [dataLoading, setDataLoading] = useState(false);
   const [loading, setLoading] = useState(false);
   const [allCoupons,setAllCoupons] = useState([])
   useEffect(()=>{
+    setDataLoading(true)
     const q = query(collection(db, "Coupons"),orderBy("createDate","desc"));
     const unsubscribe = onSnapshot(q, (querySnapshot) => {
       const coupons = [];
@@ -27,6 +30,7 @@ const Coupon = () => {
           coupons.push(doc.data());
       });
       setAllCoupons(coupons)
+      setDataLoading(false)
     });
     return unsubscribe
   },[])
@@ -99,6 +103,8 @@ const Coupon = () => {
         </div>
         <div className="row">
           {
+            dataLoading?
+            <LinearProgress color="error"/>:
             allCoupons.map(item=>{
               return(
                 <div className="col-xxl-2 col-xl-3 col-lg-4" key={item.id}>

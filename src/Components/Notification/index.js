@@ -46,35 +46,38 @@ const Notification = () => {
         const colRef = collection(db,"PushNotifications")
       const docRef = doc(colRef)
       const id = docRef.id
+      setLoading(true)
+
       await setDoc(docRef,{
         id,
         title,
         message,
         createDate:serverTimestamp()
       })
-        return
-        setLoading(true)
-      const response = await fetch('YOUR_CLOUD_FUNCTION_ENDPOINT', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-            title,
-            message,
-            topic:"all"
-        })
-      });
-      if (response.ok) {
-        toast.success('Notification sent successfully');
-        setMessage("")
-        setTitle("")
-        closeModal()
-        // Handle success
-      } else {
-        toast.error('Error sending notification');
-        // Handle error
-      }
+      setMessage("")
+          setTitle("")
+          closeModal()
+    //   const response = await fetch('YOUR_CLOUD_FUNCTION_ENDPOINT', {
+    //     method: 'POST',
+    //     headers: {
+    //       'Content-Type': 'application/json'
+    //     },
+    //     body: JSON.stringify({
+    //         title,
+    //         message,
+    //         topic:"all"
+    //     })
+    //   });
+    //   if (response.ok) {
+    //     toast.success('Notification sent successfully');
+    //     setMessage("")
+    //     setTitle("")
+    //     closeModal()
+    //     // Handle success
+    //   } else {
+    //     toast.error('Error sending notification');
+    //     // Handle error
+    //   }
     } catch (error) {
       toast.error('Error sending notification:', error);
       // Handle error
@@ -124,7 +127,7 @@ const Notification = () => {
                                 item.message
                             }
                             </p>
-                            <small>{dayjs(item.createDate.toDate()).format('MM/DD/YYYY HH:mm')}</small>{" "}
+                            <small>{dayjs(item?.createDate?.toDate())?.format('MM/DD/YYYY HH:mm')}</small>{" "}
                             <button onClick={()=>handleDelete(item.id)}>
                             <img
                                 src="assets/images/icons/deletenotification.svg"
