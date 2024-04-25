@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
     Button,
     Dialog,
@@ -9,11 +9,26 @@ import {
     TextField,
   } from "@mui/material";
 import { toast } from "react-toastify";
+import { collection, deleteDoc, doc, onSnapshot, orderBy, query, serverTimestamp, setDoc } from "firebase/firestore";
+import { db } from "../../config/firebase-config";
+import dayjs from "dayjs";
 const Notification = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [title,setTitle] = useState("")
   const [message,setMessage] = useState("")
+  const [allNotifications,setAllNotifications] = useState([])
+  useEffect(()=>{
+    const q = query(collection(db, "PushNotifications"),orderBy("createDate","desc"));
+    const unsubscribe = onSnapshot(q, (querySnapshot) => {
+      const notifications = [];
+      querySnapshot.forEach((doc) => {
+        notifications.push(doc.data());
+      });
+      setAllNotifications(notifications)
+    });
+    return unsubscribe
+  },[])
   const openModal = () => {
     setIsOpen(true);
   };
@@ -28,6 +43,15 @@ const Notification = () => {
             toast.error("Please fill all the fields")
             return
         }
+        const colRef = collection(db,"PushNotifications")
+      const docRef = doc(colRef)
+      const id = docRef.id
+      await setDoc(docRef,{
+        id,
+        title,
+        message,
+        createDate:serverTimestamp()
+      })
         return
         setLoading(true)
       const response = await fetch('YOUR_CLOUD_FUNCTION_ENDPOINT', {
@@ -59,6 +83,15 @@ const Notification = () => {
         setLoading(false)
     }
   };
+  const handleDelete = async(id) => {
+    try {
+     const docRef = doc(db,"PushNotifications",id)
+     await deleteDoc(docRef)
+     toast.error("Notification deleted!")
+    } catch (error) {
+     toast.error("Something went wrong!")
+    }
+   }
   return (
     <div className="userprofilebody">
       <div className="mainheading">
@@ -77,60 +110,33 @@ const Notification = () => {
               </span>
             </div>
             <ul>
-              <li>
-                <p>
-                  Oh, I finished de-bugging the phones, but the system's
-                  compiling for eighteen minutes, or twenty.
-                </p>
-                <small>Last Wednesday at 9:42 AM</small>{" "}
-                <button>
-                  <img
-                    src="assets/images/icons/deletenotification.svg"
-                    alt=""
-                  />
-                </button>
-              </li>
-              <li>
-                <p>
-                  Oh, I finished de-bugging the phones, but the system's
-                  compiling for eighteen minutes, or twenty.
-                </p>
-                <small>Last Wednesday at 9:42 AM</small>{" "}
-                <button>
-                  <img
-                    src="assets/images/icons/deletenotification.svg"
-                    alt=""
-                  />
-                </button>
-              </li>
-              <li>
-                <p>
-                  Oh, I finished de-bugging the phones, but the system's
-                  compiling for eighteen minutes, or twenty.
-                </p>
-                <small>Last Wednesday at 9:42 AM</small>{" "}
-                <button>
-                  <img
-                    src="assets/images/icons/deletenotification.svg"
-                    alt=""
-                  />
-                </button>
-              </li>
-              <li>
-                <p>
-                  Oh, I finished de-bugging the phones, but the system's
-                  compiling for eighteen minutes, or twenty.
-                </p>
-                <small>Last Wednesday at 9:42 AM</small>{" "}
-                <button>
-                  <img
-                    src="assets/images/icons/deletenotification.svg"
-                    alt=""
-                  />
-                </button>
-              </li>
+              {
+                allNotifications.map(item=>{
+                    return(
+                        <li>
+                            <h5>
+                            {
+                                item.title
+                            }
+                            </h5>
+                            <p>
+                            {
+                                item.message
+                            }
+                            </p>
+                            <small>{dayjs(item.createDate.toDate()).format('MM/DD/YYYY HH:mm')}</small>{" "}
+                            <button onClick={()=>handleDelete(item.id)}>
+                            <img
+                                src="assets/images/icons/deletenotification.svg"
+                                alt=""
+                            />
+                            </button>
+                        </li>
+                    )
+                })
+              }
             </ul>
-            <a href="#">View More...</a>
+            {/* <a href="#">View More...</a> */}
           </div>
         </div>
       </div>
