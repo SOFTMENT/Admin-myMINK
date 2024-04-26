@@ -1,13 +1,14 @@
 import { Dropdown } from '@mui/base/Dropdown';
 import YouTubeIcon from '@mui/icons-material/YouTube';
-import { IconButton, LinearProgress, MenuItem,Menu, Button, CircularProgress} from "@mui/material";
+import { IconButton, LinearProgress, MenuItem,Menu, Button, CircularProgress, } from "@mui/material";
 import { collection, deleteDoc, doc, getDoc, getDocs } from "firebase/firestore";
 import React, { useEffect, useState } from "react";
 import { AWS_IMAGE_BASE_URL, AWS_VIDEO_BASE_URL } from "../../config/appConfig";
 import { db } from "../../config/firebase-config";
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import { toast } from 'react-toastify';
-import {  Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, TextField } from '@mui/material';
+import {  Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, TextField,Grid } from '@mui/material';
+import ReactSimpleImageViewer from 'react-simple-image-viewer';
 const Report = () => {
     const [posts,setPosts] = useState([])
     const [loading,setLoading] = useState(false)
@@ -16,6 +17,19 @@ const Report = () => {
     const [isOpen, setIsOpen] = useState(false);
     const [selectedPost,setSelectedPost] = useState(null)
     const open = Boolean(anchorEl);
+    const [imagesOpen, setImagesOpen] = useState(false);
+    const [selectedImages,setSelectedImages] = useState([])
+    const handleOpenDialog = (images) => {
+      setSelectedImages(images.map(item=>`${AWS_IMAGE_BASE_URL}${item}`));
+      console.log(images)
+      setImagesOpen(true);
+    };
+  
+    const handleCloseDialog = () => {
+      setImagesOpen(false);
+      setSelectedImages([]);
+    };
+  
     const handleClick = (event) => {
       setAnchorEl(event.currentTarget);
     };
@@ -114,7 +128,7 @@ const Report = () => {
                                     {
                                        
                                         post.postType == "image"?
-                                        <img src={AWS_IMAGE_BASE_URL+post.postImages[0]} alt=""/>:
+                                       <a onClick={()=>handleOpenDialog(post.postImages)}> <img src={AWS_IMAGE_BASE_URL+post.postImages[0]} alt=""/></a>:
                                         post.postType == "video"?
                                        <a onClick={(event)=>handleThumbnailClick(event,post)}>
                                          <img src={AWS_IMAGE_BASE_URL+post.videoImage} alt=""/>
@@ -174,6 +188,16 @@ const Report = () => {
             <a href="#">4</a>
             <a className="arrow" href="#">&raquo;</a>
         </div> */}
+       {
+        imagesOpen&&
+        <ReactSimpleImageViewer
+        src={ selectedImages }
+        currentIndex={0 }
+        disableScroll={ false }
+        closeOnClickOutside={ true }
+        onClose={()=>{handleCloseDialog()} }
+      />
+       }
         <Dialog open={isOpen} onClose={closeModal}>
       <DialogTitle>Delete Confirmation</DialogTitle>
       <DialogContent>
@@ -204,3 +228,15 @@ const Report = () => {
     )
 }
 export default Report
+// const useStyles = makeStyles((theme) => ({
+  // image: {
+  //   width: '100%',
+  //   height: 'auto',
+  //   cursor: 'pointer',
+  // },
+  // dialogContent: {
+  //   display: 'flex',
+  //   justifyContent: 'center',
+  //   alignItems: 'center',
+  // },
+// }));

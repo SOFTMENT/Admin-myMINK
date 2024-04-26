@@ -13,7 +13,7 @@ const Header = () => {
     const [term,setTerm] = useState("")
     const handleNavigate = (event) => {
         event.preventDefault()
-        navigate("notifications")
+        navigate("/notifications")
     }
     const handleSubmit = (event) => {
       event.preventDefault()
