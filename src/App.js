@@ -9,6 +9,10 @@ import { auth } from "./config/firebase-config";
 import CommonRoute from "./routes/CommonRoute";
 import colors from "./theme/colors";
 import './styles/style.css'
+import UserDetail from "./Components/UserDetail";
+import Coupon from "./Components/Coupon";
+import Report from "./Components/Report";
+import Notification from "./Components/Notification";
 const App = () => {
   const [isLoading,setIsLoading] = useState(true)
   const theme = createTheme({
@@ -56,6 +60,13 @@ const App = () => {
       <Routes>
         <Route exact element={<CommonRoute><Login /></CommonRoute>} path='/login' />
         <Route exact element={<CommonRoute authRequire><Home /></CommonRoute>} path='/' />
+        {/* <Route exact element={<CommonRoute authRequire><Home /></CommonRoute>} path='/user' /> */}
+        <Route exact element={<CommonRoute authRequire><Notification /></CommonRoute>} path='/notifications' />
+        <Route exact element={<CommonRoute authRequire><Report /></CommonRoute>} path='/reports' />
+
+        <Route exact element={<CommonRoute authRequire><Coupon /></CommonRoute>} path='/coupons' />
+
+        <Route exact element={<CommonRoute authRequire><UserDetail /></CommonRoute>} path='/user/:userId' />
       </Routes>
     </ThemeProvider>
   )

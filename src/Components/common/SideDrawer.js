@@ -1,12 +1,24 @@
 import { useState } from "react";
 import { sideBarMenu } from "../../config/appConfig";
+import { useLocation, useNavigate } from "react-router-dom";
+import { getAuth } from "firebase/auth";
 
 const SideDrawer = ({selectedTab, setSelectedTab}) => {
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+    const navigation = useNavigate()
+    const location = useLocation();
+    const activePath = location.pathname;
 
     const toggleSidebar = () => {
         setIsSidebarOpen(!isSidebarOpen);
     };
+    const logout = async event => {
+        event.preventDefault()
+        await getAuth().signOut().then(()=>{
+           
+             
+        })
+    }
     return(
         <nav className={`sidebar ${isSidebarOpen ? '' : 'close'}`}>
         <header>
@@ -24,9 +36,10 @@ const SideDrawer = ({selectedTab, setSelectedTab}) => {
                 <ul className="menu-links">
                     {
                         sideBarMenu.map(item=>{
+                            console.log(item,activePath)
                             return(
-                                <li className={`nav-link ${selectedTab == item.index?'active':''}`} key={item.index}>
-                                    <a onClick={()=>setSelectedTab(item.index)}>
+                                <li className={`nav-link ${activePath == item.path?'active':''}`} key={item.index}>
+                                    <a onClick={()=>navigation(item.path)}>
                                         <i className={`bx ${item.icon} icon`}></i>
                                         <span className="text nav-text">{item.name}</span>
                                     </a>
@@ -39,7 +52,7 @@ const SideDrawer = ({selectedTab, setSelectedTab}) => {
 
             <div className="bottom-content">
                 <li className="">
-                    <a href="#">
+                    <a onClick={logout}>
                         <i className='bx bx-log-out icon'></i>
                         <span className="text nav-text">Logout</span>
                     </a>

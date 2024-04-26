@@ -5,6 +5,7 @@ import {
     DialogActions,
     DialogContent,
     DialogTitle,
+    LinearProgress,
     Stack,
     TextField,
   } from "@mui/material";
@@ -17,8 +18,10 @@ const Notification = () => {
   const [loading, setLoading] = useState(false);
   const [title,setTitle] = useState("")
   const [message,setMessage] = useState("")
+    const [dataLoading, setDataLoading] = useState(false);
   const [allNotifications,setAllNotifications] = useState([])
   useEffect(()=>{
+    setDataLoading(true)
     const q = query(collection(db, "PushNotifications"),orderBy("createDate","desc"));
     const unsubscribe = onSnapshot(q, (querySnapshot) => {
       const notifications = [];
@@ -26,6 +29,8 @@ const Notification = () => {
         notifications.push(doc.data());
       });
       setAllNotifications(notifications)
+    setDataLoading(false)
+
     });
     return unsubscribe
   },[])
@@ -104,7 +109,7 @@ const Notification = () => {
           Send Notification{" "}
         </button>
       </div>
-      <div className="row">
+      <div className="row" style={{justifyContent:"center"}}>
         <div className="col-xxl-4 col-xl-6 col-lg-6 ">
           <div className="notificationwrap">
             <div className="notificationall">
@@ -114,6 +119,8 @@ const Notification = () => {
             </div>
             <ul>
               {
+                dataLoading?
+                 <LinearProgress color="error"/>:
                 allNotifications.map(item=>{
                     return(
                         <li>

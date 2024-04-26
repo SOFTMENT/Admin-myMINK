@@ -27,15 +27,7 @@ const Home = () => {
             break;
     }
     return(
-        <div>
-            <SideDrawer selectedTab={selectedTab} setSelectedTab={setSelectedTab}/>
-            <section className="home">
-            <Header/>
-            {
-                tabContent
-            }
-            </section>
-        </div>
+        <User/>
     )
 }
 export default Home

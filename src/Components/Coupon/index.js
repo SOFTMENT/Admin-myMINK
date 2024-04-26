@@ -107,7 +107,7 @@ const Coupon = () => {
             <LinearProgress color="error"/>:
             allCoupons.map(item=>{
               return(
-                <div className="col-xxl-2 col-xl-3 col-lg-4" key={item.id}>
+                <div className="col-xxl-3 col-xl-3 col-lg-4" key={item.id}>
                 <div className="userprofilewrap userimgcoupon">
                   <div className="userimg">
                     <img src="assets/images/icons/coupon.svg" alt="" />

@@ -2,22 +2,26 @@ export const sideBarMenu = [
     {
         name:"Users",
         index:0,
-        icon:"bx-user"
+        icon:"bx-user",
+        path:'/'
     },
     {
         name:"Coupons",
         index:1,
-        icon:"bx-gift"
+        icon:"bx-gift",
+        path:'/coupons'
     },
     {
         name:"Notifications",
         index:2,
-        icon:"bx-bell"
+        icon:"bx-bell",
+        path:'/notifications'
     },
     {
         name:"Reports",
         index:3,
-        icon:"bx-file"
+        icon:"bx-file",
+        path:'/reports'
     }
 ]
 export const AWS_VIDEO_BASE_URL = "https://d3uhzx9vktk5vy.cloudfront.net/public/"
