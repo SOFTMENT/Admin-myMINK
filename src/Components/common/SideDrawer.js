@@ -36,10 +36,12 @@ const SideDrawer = ({selectedTab, setSelectedTab}) => {
                 <ul className="menu-links">
                     {
                         sideBarMenu.map(item=>{
-                            console.log(item,activePath)
                             return(
                                 <li className={`nav-link ${activePath == item.path?'active':''}`} key={item.index}>
-                                    <a onClick={()=>navigation(item.path)}>
+                                    <a onClick={()=>{
+                                        toggleSidebar()
+                                        navigation(item.path)
+                                    }}>
                                         <i className={`bx ${item.icon} icon`}></i>
                                         <span className="text nav-text">{item.name}</span>
                                     </a>
