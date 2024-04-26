@@ -118,7 +118,7 @@ const UserDetail = () => {
     return(
         <div className="userprofilebody">
             <div className="row">
-                <div className="col-xxl-4 col-xl-6 col-lg-6 profilecenter">
+                <div className="col-xxl-5 col-xl-5 col-lg-7 col-md-8 profilecenter">
                     <IconButton onClick={handleClick}>
                         <ArrowBackIcon/>
                     </IconButton>

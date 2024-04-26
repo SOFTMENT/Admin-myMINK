@@ -140,7 +140,7 @@ const User = (props) => {
       <div className="row">
         {users.map((user, index) => (
           <div
-            className="col-xxl-3 col-xl-3 col-lg-4"
+            className="col-xxl-3 col-xl-3 col-lg-4 col-md-6"
             key={user.uid}
             onClick={(event) => handleClick(event, user)}
           >

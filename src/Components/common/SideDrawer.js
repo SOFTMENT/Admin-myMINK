@@ -20,7 +20,7 @@ const SideDrawer = ({selectedTab, setSelectedTab}) => {
         })
     }
     return(
-        <nav className={`sidebar ${isSidebarOpen ? '' : 'close'}`}>
+        <nav className={`sidebar sidebarflow ${isSidebarOpen ? '' : 'close'}`}>
         <header>
             <div className="image-text">
                 <span className="image">
