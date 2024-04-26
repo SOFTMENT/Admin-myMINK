@@ -9,7 +9,13 @@ ul {
     margin: 0px;
     padding-left: 0px !important;
 }
-a, a:hover, a:focus, button, button:hover, button:focus {
+
+a,
+a:hover,
+a:focus,
+button,
+button:hover,
+button:focus {
     color: rgb(0, 0, 0) !important;
     text-decoration: none !important;
     cursor: pointer;
@@ -73,6 +79,11 @@ body.dark {
     display: flex;
     align-items: center;
     margin-top: 10px;
+}
+
+.myminkbutton:hover {
+    border: none;
+    color: white !important;
 }
 
 .sidebar header .image,
@@ -429,6 +440,7 @@ body.dark .home .text {
 }
 
 .myminkbutton {
+    border: none;
     height: 54px;
     display: flex;
     align-items: center;
@@ -451,7 +463,7 @@ body.dark .home .text {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 17px 40px 17px 60px;
+    padding: 17px 40px 17px 40px;
     background: white;
 }
 
@@ -508,7 +520,7 @@ body.dark .home .text {
 .home .headerwrap .notificationsetting img {}
 
 .userprofilebody {
-    padding: 30px 40px 0px 60px;
+    padding: 30px 40px 0px 40px;
 }
 
 .userprofilebody .mainheading {
@@ -543,6 +555,7 @@ body.dark .home .text {
 
 .userimgcoupon .userimg {
     margin: 0 0 8px 0px !important;
+    text-align: center;
 }
 
 .userprofilewrap .userimg {
@@ -621,6 +634,7 @@ body.dark .home .text {
     align-items: center;
     padding: 0px 0px 20px;
     gap: 15px;
+    flex-wrap: wrap;
 }
 
 .profileuserwrap .profilebody .userimg img {
@@ -666,7 +680,7 @@ body.dark .home .text {
     width: 15px;
     background: none;
     border: none;
-    height: 20px ;
+    height: 20px;
     object-fit: contain;
 }
 
@@ -699,15 +713,18 @@ body.dark .home .text {
 }
 
 .profilebody .profilebutton {
+    justify-content: center;
     display: flex;
+    margin: 20px 0 0;
     align-items: center;
-    gap: 16px;
+    gap: 11px;
+    flex-wrap: wrap;
 }
 
 .profilebody .profilebutton button {
     background: none;
     border: 1px solid rgb(215, 215, 215);
-    padding: 8px 20px;
+    padding: 7px 14px;
     border-radius: 8px;
     display: flex;
     align-items: center;
@@ -758,6 +775,10 @@ body.dark .home .text {
     border: none !important;
 }
 
+.btn-primary:hover {
+    color: white !important;
+}
+
 .btn-primary {
     background-color: #d20001 !important;
     border: none !important;
@@ -791,11 +812,13 @@ body.dark .home .text {
     border: none;
     height: 48px;
 }
+
 .notificationwrap {
     background: white;
     padding: 25px;
     border-radius: 10px;
 }
+
 .notificationwrap .notificationall {
     display: flex;
     align-items: center;
@@ -804,42 +827,57 @@ body.dark .home .text {
 }
 
 .notificationall {}
+
 .notificationwrap .notificationall span {
     display: flex;
     align-items: center;
     gap: 10px;
 }
+
 .notificationwrap .notificationall span h4 {
     font-size: 25px;
 }
+
 .notificationwrap .notificationall span select {
     border: none;
     opacity: 0.5;
     font-size: 14px;
     padding: 7px 10px;
 }
+
 .notificationwrap .notificationall label {
     display: flex;
     align-items: center;
     gap: 5px;
 }
+
 .notificationwrap ul {}
+
 .notificationwrap ul li {
     list-style: none;
     border-bottom: 1px solid #b6b6b6;
     padding: 0 0 20px;
     margin: 0 0 18px;
 }
-.notificationwrap ul li p {margin: 0 0 10px;font-size: 18px;line-height: 28px;opacity: 0.9;}
+
+.notificationwrap ul li p {
+    margin: 0 0 10px;
+    font-size: 18px;
+    line-height: 28px;
+    opacity: 0.9;
+}
+
 .notificationwrap ul li small {
     font-size: 14px;
     opacity: 0.5;
 }
+
 .notificationwrap ul li button {
     float: inline-end;
     background: none;
     border: none;
 }
+
 .notificationwrap a {
     opacity: 0.6;
     font-size: 14px;
@@ -849,13 +887,16 @@ body.dark .home .text {
     justify-content: right;
     padding: 15px 0 0;
 }
+
 .modal-dialogcoupon .modal-body {
     padding: 0px 23px 36px;
 }
+
 .modal-dialogcoupon .modal-body h5 {
     text-align: center;
     margin: 0 0 20px;
 }
+
 .reportwrap {
     background: white;
     padding: 8px;
@@ -864,44 +905,52 @@ body.dark .home .text {
 }
 
 .reportwrap {}
+
 .reportwrap .reportimg {
     margin: 0px 0px 17px;
 }
+
 .reportwrap .reportimg img {
     width: 100%;
     height: 159px;
     object-fit: cover;
     border-radius: 5px;
 }
-.reportwrap  p {
+
+.reportwrap p {
     padding: 0 10px 0 10px;
     font-size: 16px;
     line-height: 26px;
 }
-.reportwrap  span {
+
+.reportwrap span {
     display: flex;
     margin: 0 9px 0 0;
     align-items: center;
     justify-content: space-between;
     position: relative;
 }
-.reportwrap  span p {
+
+.reportwrap span p {
     color: #d20001;
     font-size: 15px;
     line-height: 24px;
 }
+
 .reportwrap form {
     width: 50%;
-  }
-  
- .reportwrap .hide {
+}
+
+.reportwrap .hide {
     display: none;
-  }
+}
+
 .reportwrap button {
     position: relative;
     background: none;
     border: none;
-}  
+}
+
 .reportwrap .show {
     display: block;
     position: absolute;
@@ -911,4 +960,214 @@ body.dark .home .text {
     border-radius: 5px;
     background: white;
     padding: 9px 18px 3px 5px;
-  }
+}
+
+
+
+/* RESPONSIVE .CSSS */
+@media (max-width: 1440px) {}
+
+@media (max-width: 991px) {
+    .home .headerwrap .welcomeback h6 {
+        font-size: 14px;
+
+    }
+
+    .home .headerwrap .welcomeback h3 {
+        font-size: 20px;
+    }
+
+
+
+    .home .headerwrap {
+        padding: 14px 17px 12px 30px;
+    }
+
+    .userprofilebody {
+        padding: 30px 20px 0px 30px;
+    }
+
+    .userprofilewrap {
+        margin: 0px 0px 20px;
+        padding: 12px 30px;
+    }
+
+    .userprofilebody .mainheading {
+        margin: 0px 0px 20px;
+    }
+
+    .userprofilebody .mainheading h3 {
+        border-left: 3px solid rgb(210, 0, 1);
+        padding: 0px 0px 0px 10px;
+        font-size: 22px;
+    }
+
+    .home .headerwrap .notificationsetting img {
+        width: 40px;
+    }
+}
+
+@media (max-width: 767px) {
+    .home .headerwrap {
+        padding: 14px 17px 12px 50px;
+    }
+
+    .sidebar header .toggle {
+        height: 40px;
+        width: 40px;
+        margin: 6px 0 0 0;
+    }
+
+    .userprofilebody {
+        padding: 30px 20px 0px 20px;
+    }
+    .sidebar header .image {
+            display: block;
+    }
+    .sidebar header .image-text {
+        /* justify-content: flex-start; */
+    }
+
+    .sidebar.close {
+        width: 0;
+        padding: 0;
+    }
+
+    .sidebar.close~.home {
+        width: 100%;
+        left: 0px;
+    }
+
+    .home {
+        left: 0;
+        width: 100%;
+    }
+
+    .sidebarflow {
+        position: fixed;
+        z-index: 999;
+        width: 90%;
+    }
+
+    .home .headerwrap .searchheader label {
+        top: 8px;
+    }
+
+    .searchicon::after {
+        height: 26px;
+        top: 0px;
+    }
+
+    .home .headerwrap .searchheader input {
+        height: 40px;
+        width: 100%;
+    }
+
+    .userprofilewrap .userimg img {
+        width: 60px;
+        height: 60px;
+    }
+
+    .home .headerwrap .welcomeback {
+        display: none;
+    }
+
+    .userprofilewrap h4 {
+        font-size: 18px;
+    }
+
+    .userprofilewrap h6 {
+        font-size: 14px;
+    }
+
+    .loginwrap .logomink img {
+        height: 70px;
+        width: 80px;
+    }
+
+    .loginwrap .loginscreenwrap {
+        margin: 0 15px;
+        padding: 38px 20px;
+    }
+
+    .loginscreenwrap::after {
+        left: 10px;
+        top: 10px;
+    }
+
+    .loginwrap .loginscreenwrap .welcomemink h2 {
+        font-size: 28px;
+        line-height: 24px;
+    }
+}
+
+
+@media (max-width: 576px) {
+   
+    .userimgcoupon img {
+        width: 70% !important;
+    }
+
+    .userimgcoupon h2 {
+        font-size: 20px;
+    }
+
+    .userimgcoupon b {
+        font-size: 16px;
+    }
+
+    .btn-primary {
+        padding: 9px 10px !important;
+        font-size: 13px;
+    }
+
+    .profileuserwrap .profilebody {
+        top: 0;
+        padding: 0 20px;
+
+    }
+
+    .MuiButtonBase-root {
+        padding: 0 0 11px 0 !important;
+    }
+
+    .profilebody .profilebutton button img {
+        width: 15px;
+    }
+
+    .profileuserwrap .profilebody .userimg {
+        padding: 12px 0;
+    }
+
+    .profileuserwrap .profilebody p {
+        margin: 0 0 5px;
+    }
+
+    .profileuserwrap .profilebody .userimg span .bangladeshprofile p {
+        font-size: 14px;
+    }
+
+    .profileuserwrap .profilebody .userimg span h2 {
+        font-size: 18px;
+        font-weight: 600;
+    }
+
+    .profileuserwrap .profilebody .userimg img {
+        width: 100px;
+        height: 100px;
+    }
+
+    .profileuserwrap .profilebody .userimg span {
+        padding: 0;
+    }
+
+    .profileuserwrap .profilebody ul .informationbody li {
+        font-size: 14px;
+    }
+
+    .profilebody .profilebutton button {
+        padding: 5px 10px;
+        margin: 0 0 20px 0px;
+        font-size: 12px;
+    }
+}
