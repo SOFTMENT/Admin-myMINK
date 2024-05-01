@@ -29,8 +29,9 @@ const User = (props) => {
       setIsSearch(true);
       setLastVisible(null)
       setHasMore(false)
+      console.log(state)
       if (state?.hits?.length) {
-        
+        setNoData(false)
         setUsers(state?.hits);
       } else {
         setNoData(true);

@@ -1,4 +1,4 @@
-import { deleteDoc, doc, getDoc, updateDoc } from "firebase/firestore";
+import { collection, deleteDoc, doc, getDoc, getDocs, query, setDoc, updateDoc, where } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { auth, db } from "../../config/firebase-config";
@@ -17,6 +17,7 @@ import CancelOutlinedIcon from '@mui/icons-material/CancelOutlined';
 import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, TextField } from '@mui/material';
 const UserDetail = () => {
     const { userId } = useParams();
+    console.log(userId)
     const [userData, setUserData] = useState(null);
     const navigate = useNavigate();
     const [confirmationText, setConfirmationText] = useState('');
@@ -88,6 +89,25 @@ const UserDetail = () => {
     const handleBlock = async(event) => {
         event.preventDefault()
         try {
+            setLoading(true)
+            const colRef = collection(db,"Posts")
+            const qry = query(colRef,where("uid","==",userId))
+            const postSnapshot = await getDocs(qry)
+             // Array to store all update promises
+            const updatePromises = [];
+
+            // Iterate through each post document
+            postSnapshot.docs.forEach((doc) => {
+              // Add or update the isActive field using merge option
+              const updatedData = { isActive: userData?.isBlocked?true:false };
+
+              // Update the document with the new data and store the promise
+              updatePromises.push(setDoc(doc.ref, updatedData, { merge: true }));
+            });
+
+            // Wait for all updates to complete
+            await Promise.all(updatePromises);
+            
             const docRef = doc(db,"Users",userId)
             await updateDoc(docRef,{
                 isBlocked:userData.isBlocked?false:true
@@ -98,7 +118,9 @@ const UserDetail = () => {
             toast.error("User blocked!")
 
             await fetchUserData()
+            setLoading(false)
            } catch (error) {
+            console.log(error)
             toast.error("Something went wrong!")
            }
     }
@@ -172,14 +194,20 @@ const UserDetail = () => {
                         </div> */}
                       </ul>
                          <div className="profilebutton">
-                          <button onClick={handleContactButtonClick}><LocalPhoneOutlinedIcon htmlColor="#A9A9A9"/>Contact</button>
-                          <button onClick={handleBlock}>{
+                          <button onClick={handleContactButtonClick}><LocalPhoneOutlinedIcon htmlColor="#A9A9A9"/>
+                            
+                          Contact</button>
+                          <button disabled={loading} onClick={handleBlock}>{
                             userData?.isBlocked?
                             <CheckCircleOutlineOutlinedIcon htmlColor="green"/>:
                             <CancelOutlinedIcon htmlColor="red"/>
                           }{
                             userData?.isBlocked?"Unblock":"Block"
-                          }</button>
+                          }
+                          {
+                              loading &&  <CircularProgress size={20} sx={{ color: "red" }} /> 
+                            }
+                          </button>
                           <button className="active" onClick={openModal}><img src="/assets/images/icons/deleteprofile.svg" alt=""/>Delete</button>
                          </div>
                   </div>
@@ -202,7 +230,8 @@ const UserDetail = () => {
         />
       </DialogContent>
       <DialogActions>
-        <Button onClick={closeModal} color="primary">
+        <Button
+          onClick={closeModal} color="primary" disabled={loading}>
           Cancel
         </Button>
         <Button 

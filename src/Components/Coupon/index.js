@@ -8,7 +8,7 @@ import {
   Stack,
   TextField,
 } from "@mui/material";
-import { addDoc, arrayUnion, collection, deleteDoc, doc, getCountFromServer, getDoc, onSnapshot, orderBy, query, serverTimestamp, setDoc, updateDoc, where, writeBatch } from "firebase/firestore"
+import { addDoc, arrayUnion, collection, deleteDoc, doc, getCountFromServer, getDoc, onSnapshot, orderBy, query, serverTimestamp, setDoc, Timestamp, updateDoc, where, writeBatch } from "firebase/firestore"
 import { useEffect, useState } from "react";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import dayjs from "dayjs";
@@ -43,20 +43,17 @@ const Coupon = () => {
   };
   const handleSubmit = async(event) => {
     event.preventDefault();
-    if (discountPercentage >= 1 && discountPercentage <= 100) {
+    // if (discountPercentage >= 1 && discountPercentage <= 100) {
       try {
       setLoading(true)
 
         const length = 6; // Adjust the length of the coupon as needed
       const newCoupon = generateRandomCoupon(length);
-      const colRef = collection(db,"Coupons")
-      const docRef = doc(colRef)
-      const id = docRef.id
+      // const colRef = collection(db,"Coupons")
+      const docRef = doc(db,"Coupons",newCoupon)
       await setDoc(docRef,{
-        id,
-        expiryDate:dayjs(expiryDate).format("DD-MM-YYYY"),
-        discountPercentage,
-        couponCode:newCoupon,
+        id:newCoupon,
+        expiryDate:Timestamp.fromDate(expiryDate.toDate()),
         createDate:serverTimestamp()
       })
       closeModal()
@@ -64,15 +61,16 @@ const Coupon = () => {
       setExpiryDate(dayjs(new Date()))
       toast.success("Coupon created!")
       } catch (error) {
+        console.log(error)
         toast.error("Something went wrong!")
       }
       finally{
       setLoading(false)
       }
-    }
-    else{
-      toast.error("Please enter a valid discount percentage.")
-    }
+    // }
+    // else{
+    //   toast.error("Please enter a valid discount percentage.")
+    // }
   };
   const handleDelete = async(id) => {
    try {
@@ -112,9 +110,9 @@ const Coupon = () => {
                   <div className="userimg">
                     <img src="assets/images/icons/coupon.svg" alt="" />
                   </div>
-                  <h2>{item.discountPercentage}%</h2>
-                  <h6>{item.couponCode}</h6>
-                  <b>{dayjs(item.expiryDate, 'DD-MM-YYYY').format('DD MMMM YYYY')}</b>
+                  <h2>100%</h2>
+                  <h6>{item.id}</h6>
+                  <b>{dayjs(item.expiryDate.toDate()).format('DD MMMM YYYY')}</b>
                   <button onClick={()=>handleDelete(item.id)}>
                     <img src="assets/images/icons/deletecoupon.svg" alt="" />{" "}
                   </button>
@@ -147,7 +145,7 @@ const Coupon = () => {
           </Stack>
         </DialogTitle>
         <DialogContent>
-          <TextField
+          {/* <TextField
             autoFocus
             margin="dense"
             id="discount"
@@ -163,7 +161,7 @@ const Coupon = () => {
                 setDiscountPercentage(input);
               }
             }}
-          />
+          /> */}
 
           <DatePicker
             label="Expiry Date"
