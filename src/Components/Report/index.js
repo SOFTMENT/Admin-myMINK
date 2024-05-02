@@ -1,6 +1,6 @@
 import { Dropdown } from '@mui/base/Dropdown';
 import YouTubeIcon from '@mui/icons-material/YouTube';
-import { IconButton, LinearProgress, MenuItem,Menu, Button, CircularProgress, } from "@mui/material";
+import { IconButton, LinearProgress, MenuItem,Menu, Button, CircularProgress, Tabs, Tab, } from "@mui/material";
 import { collection, deleteDoc, doc, getDoc, getDocs } from "firebase/firestore";
 import React, { useEffect, useState } from "react";
 import { AWS_IMAGE_BASE_URL, AWS_VIDEO_BASE_URL } from "../../config/appConfig";
@@ -9,6 +9,7 @@ import MoreVertIcon from '@mui/icons-material/MoreVert';
 import { toast } from 'react-toastify';
 import {  Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, TextField,Grid } from '@mui/material';
 import ReactSimpleImageViewer from 'react-simple-image-viewer';
+import CommentReport from '../CommentReport';
 const Report = () => {
     const [posts,setPosts] = useState([])
     const [loading,setLoading] = useState(false)
@@ -112,11 +113,8 @@ const Report = () => {
         }
       };
     return(
-        <div className="userprofilebody">
-        <div className="mainheading">
-            <h3>Report</h3>
-        </div>
-        <div className="row">
+      <div>
+          <div className="row">
             {
                 loading?
                 <LinearProgress color="error"/>:
@@ -180,6 +178,7 @@ const Report = () => {
             }
             
         </div>
+        
         {/* <div className="pagination">
             <a href="#">&laquo;</a>
             <a href="#">1</a>

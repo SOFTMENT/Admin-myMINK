@@ -13,6 +13,7 @@ import UserDetail from "./Components/UserDetail";
 import Coupon from "./Components/Coupon";
 import Report from "./Components/Report";
 import Notification from "./Components/Notification";
+import ReportParent from "./Components/ReportParent";
 const App = () => {
   const [isLoading,setIsLoading] = useState(true)
   const theme = createTheme({
@@ -62,7 +63,7 @@ const App = () => {
         <Route exact element={<CommonRoute authRequire><Home /></CommonRoute>} path='/' />
         {/* <Route exact element={<CommonRoute authRequire><Home /></CommonRoute>} path='/user' /> */}
         <Route exact element={<CommonRoute authRequire><Notification /></CommonRoute>} path='/notifications' />
-        <Route exact element={<CommonRoute authRequire><Report /></CommonRoute>} path='/reports' />
+        <Route exact element={<CommonRoute authRequire><ReportParent /></CommonRoute>} path='/reports' />
 
         <Route exact element={<CommonRoute authRequire><Coupon /></CommonRoute>} path='/coupons' />
 
