@@ -4,12 +4,13 @@ import { IconButton, LinearProgress, MenuItem,Menu, Button, CircularProgress, Ta
 import { collection, deleteDoc, doc, getDoc, getDocs } from "firebase/firestore";
 import React, { useEffect, useState } from "react";
 import { AWS_IMAGE_BASE_URL, AWS_VIDEO_BASE_URL } from "../../config/appConfig";
-import { db } from "../../config/firebase-config";
+import { db, functions } from "../../config/firebase-config";
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import { toast } from 'react-toastify';
 import {  Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, TextField,Grid } from '@mui/material';
 import ReactSimpleImageViewer from 'react-simple-image-viewer';
 import CommentReport from '../CommentReport';
+import { httpsCallable } from 'firebase/functions';
 const Report = () => {
     const [posts,setPosts] = useState([])
     const [loading,setLoading] = useState(false)
@@ -88,8 +89,10 @@ const Report = () => {
     const handleNoIssue = async(id) => {
         handleClose()
         try {
-            const docRef = doc(db,"Reports",id)
-            await deleteDoc(docRef)
+          const deletePostReport = httpsCallable(functions, 'deletePostReport');
+          await deletePostReport({
+            reportId:id
+          })
             setPosts(posts.filter(post=>post.id!=id))
            } catch (error) {
             toast.error("Something went wrong!")
@@ -99,9 +102,14 @@ const Report = () => {
         if (confirmationText === 'confirm') {
         //   onDelete();
         try {
-            const docRef = doc(db,"Posts",selectedPost.postID)
-            await deleteDoc(docRef)
-            await handleNoIssue(selectedPost.id)
+          const deletePostById = httpsCallable(functions, 'deletePostById');
+          await deletePostById({
+            id:selectedPost.postID
+          })
+          const deletePostReport = httpsCallable(functions, 'deletePostReport');
+          await deletePostReport({
+            reportId:selectedPost.id
+          })
             toast.error("Post deleted!")
             closeModal()
            } catch (error) {

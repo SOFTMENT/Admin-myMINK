@@ -13,7 +13,8 @@ import { useEffect, useState } from "react";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import dayjs from "dayjs";
 import { toast } from "react-toastify"
-import { db } from "../../config/firebase-config";
+import { db, functions } from "../../config/firebase-config";
+import { httpsCallable } from "firebase/functions";
 const Coupon = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [expiryDate, setExpiryDate] = useState(dayjs(new Date()));
@@ -41,20 +42,16 @@ const Coupon = () => {
   const closeModal = () => {
     setIsOpen(false);
   };
+  //createCoupon
   const handleSubmit = async(event) => {
     event.preventDefault();
     // if (discountPercentage >= 1 && discountPercentage <= 100) {
       try {
       setLoading(true)
-
-        const length = 6; // Adjust the length of the coupon as needed
-      const newCoupon = generateRandomCoupon(length);
-      // const colRef = collection(db,"Coupons")
-      const docRef = doc(db,"Coupons",newCoupon)
-      await setDoc(docRef,{
-        id:newCoupon,
-        expiryDate:Timestamp.fromDate(expiryDate.toDate()),
-        createDate:serverTimestamp()
+      const createCoupon = httpsCallable(functions, 'createCoupon');
+      await createCoupon({
+        expiryDate:expiryDate.toDate().toISOString(),
+        length:6
       })
       closeModal()
       setDiscountPercentage("")
@@ -72,10 +69,13 @@ const Coupon = () => {
     //   toast.error("Please enter a valid discount percentage.")
     // }
   };
+  //deleteCoupon
   const handleDelete = async(id) => {
    try {
-    const docRef = doc(db,"Coupons",id)
-    await deleteDoc(docRef)
+    const deleteCoupon = httpsCallable(functions, 'deleteCoupon');
+    await deleteCoupon({
+      couponId:id
+    })
     toast.error("Coupon deleted!")
    } catch (error) {
     toast.error("Something went wrong!")

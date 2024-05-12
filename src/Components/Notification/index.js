@@ -11,8 +11,9 @@ import {
   } from "@mui/material";
 import { toast } from "react-toastify";
 import { collection, deleteDoc, doc, onSnapshot, orderBy, query, serverTimestamp, setDoc } from "firebase/firestore";
-import { db } from "../../config/firebase-config";
+import { db, functions } from "../../config/firebase-config";
 import dayjs from "dayjs";
+import { httpsCallable } from "firebase/functions";
 const Notification = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -41,6 +42,8 @@ const Notification = () => {
   const closeModal = () => {
     setIsOpen(false);
   };
+  //sendPushNotificationsOnTopic
+  //topic title message
   const handleSubmit = async (event) => {
     event.preventDefault();
     try {
@@ -48,17 +51,14 @@ const Notification = () => {
             toast.error("Please fill all the fields")
             return
         }
-        const colRef = collection(db,"PushNotifications")
-      const docRef = doc(colRef)
-      const id = docRef.id
       setLoading(true)
 
-      await setDoc(docRef,{
-        id,
-        title,
-        message,
-        createDate:serverTimestamp()
-      })
+      const sendNotificationToTopic = httpsCallable(functions, 'sendNotificationToTopic');
+            await sendNotificationToTopic({
+              title,
+              message,
+              topic:"all",
+            })
       setMessage("")
           setTitle("")
           closeModal()
@@ -91,10 +91,14 @@ const Notification = () => {
         setLoading(false)
     }
   };
+  //deleteNotification
+  //id
   const handleDelete = async(id) => {
     try {
-     const docRef = doc(db,"PushNotifications",id)
-     await deleteDoc(docRef)
+      const deleteNotification = httpsCallable(functions, 'deleteNotification');
+      await deleteNotification({
+       id
+      })
      toast.error("Notification deleted!")
     } catch (error) {
      toast.error("Something went wrong!")

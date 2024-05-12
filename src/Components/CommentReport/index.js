@@ -4,11 +4,12 @@ import { IconButton, LinearProgress, MenuItem,Menu, Button, CircularProgress, } 
 import { collection, deleteDoc, doc, getDoc, getDocs } from "firebase/firestore";
 import React, { useEffect, useState } from "react";
 import { AWS_IMAGE_BASE_URL, AWS_VIDEO_BASE_URL } from "../../config/appConfig";
-import { db } from "../../config/firebase-config";
+import { db, functions } from "../../config/firebase-config";
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import { toast } from 'react-toastify';
 import {  Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, TextField,Grid } from '@mui/material';
 import ReactSimpleImageViewer from 'react-simple-image-viewer';
+import { httpsCallable } from 'firebase/functions';
 const CommentReport = () => {
     const [posts,setPosts] = useState([])
     const [loading,setLoading] = useState(false)
@@ -89,8 +90,10 @@ const CommentReport = () => {
     const handleNoIssue = async(id) => {
         handleClose()
         try {
-            const docRef = doc(db,"CommentReports",id)
-            await deleteDoc(docRef)
+          const deleteCommentReport = httpsCallable(functions, 'deleteCommentReport');
+          await deleteCommentReport({
+            reportId:id
+          })
             setPosts(posts.filter(post=>post.id!=id))
            } catch (error) {
             toast.error("Something went wrong!")
@@ -100,9 +103,17 @@ const CommentReport = () => {
         if (confirmationText === 'confirm') {
         //   onDelete();
         try {
-            const docRef = doc(db,"Posts",selectedPost.postID,"Comments",selectedPost.commentId)
-            await deleteDoc(docRef)
-            await handleNoIssue(selectedPost.id)
+            // const docRef = doc(db,"Posts",selectedPost.postID,"Comments",selectedPost.commentId)
+            // await deleteDoc(docRef)
+            const deleteComment = httpsCallable(functions, 'deleteComment');
+            await deleteComment({
+              postId:selectedPost.postID,
+              commentId:selectedPost.commentId
+            })
+            const deleteCommentReport = httpsCallable(functions, 'deleteCommentReport');
+            await deleteCommentReport({
+              reportId:selectedPost.id
+            })
             toast.error("Comment deleted!")
             closeModal()
            } catch (error) {

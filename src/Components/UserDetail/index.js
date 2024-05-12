@@ -1,7 +1,7 @@
 import { collection, deleteDoc, doc, getDoc, getDocs, query, setDoc, updateDoc, where } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { auth, db } from "../../config/firebase-config";
+import { auth, db, functions } from "../../config/firebase-config";
 import { CircularProgress, Icon, IconButton } from "@mui/material";
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { AWS_IMAGE_BASE_URL } from "../../config/appConfig";
@@ -15,9 +15,9 @@ import CalendarMonthOutlinedIcon from '@mui/icons-material/CalendarMonthOutlined
 import CheckCircleOutlineOutlinedIcon from '@mui/icons-material/CheckCircleOutlineOutlined';
 import CancelOutlinedIcon from '@mui/icons-material/CancelOutlined';
 import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, TextField } from '@mui/material';
+import { getFunctions, httpsCallable } from "firebase/functions";
 const UserDetail = () => {
     const { userId } = useParams();
-    console.log(userId)
     const [userData, setUserData] = useState(null);
     const navigate = useNavigate();
     const [confirmationText, setConfirmationText] = useState('');
@@ -72,9 +72,11 @@ const UserDetail = () => {
     //   onDelete();
     try {
         setLoading(true)
-        const docRef = doc(db,"Users",userId)
-        await deleteDoc(docRef)
-        await deleteUser(auth, userId);
+        const deleteUserAccount = httpsCallable(functions, 'deleteUserAccount');
+        await deleteUserAccount({
+          userId,
+          username:userData.username
+        })
         toast.error("User deleted!")
         closeModal()
         navigate(-1);
@@ -86,31 +88,17 @@ const UserDetail = () => {
        }
     }
   };
+  
+  //blockUnblockUserAccount
+  //userId
+  //sendOnly userId
     const handleBlock = async(event) => {
         event.preventDefault()
         try {
             setLoading(true)
-            const colRef = collection(db,"Posts")
-            const qry = query(colRef,where("uid","==",userId))
-            const postSnapshot = await getDocs(qry)
-             // Array to store all update promises
-            const updatePromises = [];
-
-            // Iterate through each post document
-            postSnapshot.docs.forEach((doc) => {
-              // Add or update the isActive field using merge option
-              const updatedData = { isActive: userData?.isBlocked?true:false };
-
-              // Update the document with the new data and store the promise
-              updatePromises.push(setDoc(doc.ref, updatedData, { merge: true }));
-            });
-
-            // Wait for all updates to complete
-            await Promise.all(updatePromises);
-            
-            const docRef = doc(db,"Users",userId)
-            await updateDoc(docRef,{
-                isBlocked:userData.isBlocked?false:true
+            const toggleUserBlockStatus = httpsCallable(functions, 'toggleUserBlockStatus');
+            await toggleUserBlockStatus({
+              userId
             })
             if(userData.isBlocked)
             toast.success("User unblocked!")
