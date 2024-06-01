@@ -13,6 +13,15 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v2
 
+
+    - name: Setup environment
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y ncurses-bin
+        ./scripts/myscript.sh
+      env:
+        TERM: xterm-256color
+
     - name: Install Node.js
       uses: actions/setup-node@v2
       with:
@@ -25,10 +34,7 @@ jobs:
       run: |
         CI=false npm run build
 
-    - name: Execute custom script
-      run: bash ./scripts/mscript.sh
-      env:
-        TERM: xterm-256color
+
 
     - name: Deploy to GoDaddy
       uses: appleboy/scp-action@master
