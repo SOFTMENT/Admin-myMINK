@@ -1,8 +1,29 @@
+kind: pipeline
+type: docker
+name: default
+
 steps:
-  - name: prepare-environment
+  - name: setup
     image: alpine
-    environment:
-      TERM: xterm-256color
     commands:
-      - echo "${{TERM}} is set for tput compatibility."
-      - mkdir -p /home/***/public_html/admin.mymink.com.au
+      - echo "Setup tasks..."
+      - echo "More setup tasks..."
+
+  - name: build
+    image: alpine
+    commands:
+      - echo "Building application..."
+      - echo -e "\033[34mBuild process started...\033[0m"  # Blue text without tput
+
+  - name: deployment
+    image: alpine
+    commands:
+      - echo "Deploying application..."
+      - echo -e "\033[32mDeployment started...\033[0m"  # Green text without tput
+      - ./deploy_script.sh  # Ensure this script does not use tput
+
+trigger:
+  branch:
+    - main
+  event:
+    - push

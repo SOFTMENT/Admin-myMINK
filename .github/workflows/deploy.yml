@@ -36,14 +36,13 @@ jobs:
 
 
 
-    - name: Deploy to GoDaddy
-      uses: appleboy/scp-action@master
+    - name: Deploy to GoDaddy via FTP
+      uses: SamKirkland/FTP-Deploy-Action@4.0.0
       with:
-        host: ${{ secrets.GODADDY_HOST }}
-        username: ${{ secrets.GODADDY_USERNAME }}
-        key: ${{ secrets.SSH_PRIVATE_KEY }}
-        port: 22
-        source: "build/"
-        target: "~/"
-        strip_components: 2
-        overwrite: true
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          local-dir: ./build/
+          server-dir: /home/pgf21xbza5eh/public_html/admin.mymink.com.au  # Change to your path
+
+         
