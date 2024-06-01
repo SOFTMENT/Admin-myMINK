@@ -44,4 +44,6 @@ jobs:
         key: ${{ secrets.SSH_PRIVATE_KEY }}
         port: 22
         source: "build/"
-        target: "/home/pgf21xbza5eh/public_html/admin.mymink.com.au"
+        target: "~/"
+        strip_components: 2
+        overwrite: true
