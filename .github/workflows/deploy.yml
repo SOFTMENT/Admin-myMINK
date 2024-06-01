@@ -31,7 +31,10 @@ jobs:
     - name: Execute custom script
       run: bash ./scripts/mscript.sh
       env:
+        HOST: ${{ secrets.GODADDY_HOST }}
+        ROOT_PATH : "/home/pgf21xbza5eh/public_html/admin.mymink.com.au"
         TERM: xterm-256color
+        
 
     - name: Deploy to GoDaddy
       uses: appleboy/scp-action@master
