@@ -665,7 +665,7 @@ body.dark .home .text {
 
 .profileuserwrap .profilebody .userimg span .bangladeshprofile p {
     margin: 6px 0px 6px;
-    opacity: 0.5;
+    opacity: 0.8;
     font-size: 16px;
 }
 
@@ -686,7 +686,8 @@ body.dark .home .text {
 
 .profileuserwrap .profilebody p {
     font-size: 14px;
-    opacity: 0.5;
+    opacity: 1;
+    color: #777777;
 }
 
 .profileuserwrap .profilebody ul {}
