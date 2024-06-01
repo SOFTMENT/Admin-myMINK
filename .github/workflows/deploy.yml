@@ -10,7 +10,6 @@ on:
       - main  # Set this to the branch you want to deploy
 
 jobs:
-
   build:
     runs-on: ubuntu-latest
 
@@ -21,7 +20,7 @@ jobs:
     - name: Install Node.js
       uses: actions/setup-node@v2
       with:
-        node-version: 'v21.7.1'  # Set this to your Node.js version
+        node-version: '14'  # Verify your Node.js version, 'v21.7.1' seems incorrect
 
     - name: Install dependencies
       run: npm install
@@ -30,15 +29,20 @@ jobs:
       run: |
         CI=false npm run build
         
+    - name: Execute custom script
+      run: bash ./scripts/mscript.sh
+      env:
+        TERM: xterm-256color  # Set TERM here to ensure tput works
+
     - name: Deploy to GoDaddy
       uses: appleboy/scp-action@master
       with:
-        host: ${{ secrets.GODADDY_HOST }}
+        host: ${{ env.HOST }}
         username: ${{ secrets.GODADDY_USERNAME }}
         key: ${{ secrets.SSH_PRIVATE_KEY }}
         port: 22
         source: "build/"
-        target: "/home/pgf21xbza5eh/public_html/admin.mymink.com.au"
+        target: ${{ env.ROOT_PATH }}
         overwrite: true 
         debug: true
         strip_components: 2
