@@ -34,6 +34,8 @@ jobs:
       run: |
         CI=false npm run build
 
+    - name: Zip Build Directory
+      run: zip -r build.zip build/
 
 
     - name: Deploy to GoDaddy via FTP
@@ -45,4 +47,12 @@ jobs:
           local-dir: ./build/
           server-dir: /  
 
-         
+    - name: Unzip the file on the server
+      uses: appleboy/ssh-action@master
+      with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            unzip -o /home/pgf21xbza5eh/public_html/admin.mymink.com.au/build.zip -d /home/pgf21xbza5eh/public_html/admin.mymink.com.au
+            rm /home/pgf21xbza5eh/public_html/admin.mymink.com.au/build.zip
