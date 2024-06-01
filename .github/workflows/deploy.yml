@@ -3,7 +3,7 @@ name: Deploy to GoDaddy
 env:
   HOST: ${{ secrets.GODADDY_HOST }}
   ROOT_PATH: "/home/pgf21xbza5eh/public_html/admin.mymink.com.au"
-  
+
 on:
   push:
     branches:
@@ -44,3 +44,4 @@ jobs:
         port: 22
         source: "build/"
         target: "/home/pgf21xbza5eh/public_html/admin.mymink.com.au"
+        strip_components: 2
