@@ -30,7 +30,7 @@ jobs:
       with:
         host: ${{ secrets.GODADDY_HOST }}
         username: ${{ secrets.GODADDY_USERNAME }}
-        password: ${{ secrets.GODADDY_PASSWORD }}
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
         port: 22
         source: "build/"
         target: "/public_html/admin.mymink.com.au"
