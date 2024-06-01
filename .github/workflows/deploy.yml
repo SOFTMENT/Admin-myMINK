@@ -24,14 +24,13 @@ jobs:
     - name: Build React app
       run: |
         CI=false npm run build
-
-
-    - name: Start SSH agent
-      run: |
-        eval $(ssh-agent -s)
-        echo "${{ secrets.SSH_PRIVATE_KEY_PASSPHRASE }}" | ssh-add <(echo "${{ secrets.SSH_PRIVATE_KEY }}")
-        ssh-add -l
-
-    - name: Deploy to GoDaddy using SCP
-      run: scp -o StrictHostKeyChecking=no -r ./build/ ${{ secrets.GODADDY_USERNAME }}@${{ secrets.GODADDY_HOST }}:/public_html/admin.mymink.com.au
-   
+    
+    - name: Deploy to GoDaddy
+      uses: appleboy/scp-action@master
+      with:
+        host: ${{ secrets.GODADDY_HOST }}
+        username: ${{ secrets.GODADDY_USERNAME }}
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        port: 22
+        source: "build/"
+        target: "/public_html/admin.mymink.com.au"
