@@ -1,0 +1,39 @@
+name: Deploy to GoDaddy
+
+on:
+  push:
+    branches:
+      - main  # Set this to the branch you want to deploy
+
+jobs:
+
+  
+  
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Install Node.js
+      uses: actions/setup-node@v2
+      with:
+        node-version: 'v21.7.1'  # Set this to your Node.js version
+
+    - name: Install dependencies
+      run: npm install
+
+    - name: Build React app
+      run: |
+        CI=false npm run build
+    
+    - name: Deploy to GoDaddy
+      uses: appleboy/scp-action@master
+      with:
+        host: ${{ secrets.GODADDY_HOST }}
+        username: ${{ secrets.GODADDY_USERNAME }}
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        port: 22
+        source: "build/"
+        target: "/home/pgf21xbza5eh/public_html/admin.mymink.com.au"
