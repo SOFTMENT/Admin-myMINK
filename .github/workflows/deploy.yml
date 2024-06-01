@@ -30,11 +30,6 @@ jobs:
       run: |
         CI=false npm run build
         
-    - name: Execute custom script
-      run: bash ./scripts/mscript.sh
-      
-        
-
     - name: Deploy to GoDaddy
       uses: appleboy/scp-action@master
       with:
@@ -45,4 +40,5 @@ jobs:
         source: "build/"
         target: "/home/pgf21xbza5eh/public_html/admin.mymink.com.au"
         overwrite: true 
-        
+        debug: true
+        strip_components: 2
