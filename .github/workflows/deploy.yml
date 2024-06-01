@@ -1,5 +1,9 @@
 name: Deploy to GoDaddy
 
+env:
+  HOST: ${{ secrets.GODADDY_HOST }}
+  ROOT_PATH: "/home/pgf21xbza5eh/public_html/admin.mymink.com.au"
+  
 on:
   push:
     branches:
@@ -7,8 +11,6 @@ on:
 
 jobs:
 
-  
-  
   build:
     runs-on: ubuntu-latest
 
@@ -30,10 +32,7 @@ jobs:
         
     - name: Execute custom script
       run: bash ./scripts/mscript.sh
-      env:
-        HOST: ${{ secrets.GODADDY_HOST }}
-        ROOT_PATH : "/home/pgf21xbza5eh/public_html/admin.mymink.com.au"
-        TERM: xterm-256color
+      
         
 
     - name: Deploy to GoDaddy
