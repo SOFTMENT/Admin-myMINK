@@ -27,7 +27,12 @@ jobs:
     - name: Build React app
       run: |
         CI=false npm run build
-    
+        
+    - name: Execute custom script
+      run: bash ./scripts/mscript.sh
+      env:
+        TERM: xterm-256color
+
     - name: Deploy to GoDaddy
       uses: appleboy/scp-action@master
       with:
