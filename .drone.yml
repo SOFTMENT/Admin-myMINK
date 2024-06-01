@@ -1,0 +1,8 @@
+steps:
+  - name: prepare-environment
+    image: alpine
+    environment:
+      TERM: xterm-256color
+    commands:
+      - echo "${{TERM}} is set for tput compatibility."
+      - mkdir -p /home/***/public_html/admin.mymink.com.au
