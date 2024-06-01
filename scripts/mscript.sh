@@ -1,7 +1,7 @@
 #!/bin/bash
+[[ ${TERM}=="" ]] && TPUTTERM='-T xterm-256color' \
+                  || TPUTTERM=''
 
-# Check if the TERM variable is set and the terminal supports color
-if [ "${TERM:-}" = "" ]; then
-  echo "Setting TERM to dumb" # makes tput happy
-  TERM="dumb"
-fi
+declare -r    RES='tput${TPUTTERM} sgr0'       REV='tput${TPUTTERM} rev'
+declare -r    fRD='tput${TPUTTERM} setaf 1'    bRD='tput${TPUTTERM} setab 1'
+declare -r    fGN='tput${TPUTTERM} setaf 2'    bGN='tput${TPUTTERM} setab 2'
