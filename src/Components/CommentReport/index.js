@@ -22,7 +22,6 @@ const CommentReport = () => {
     const [selectedImages,setSelectedImages] = useState([])
     const handleOpenDialog = (images) => {
       setSelectedImages(images.map(item=>`${AWS_IMAGE_BASE_URL}${item}`));
-      console.log(images)
       setImagesOpen(true);
     };
   
@@ -67,7 +66,6 @@ const CommentReport = () => {
                 }));
         
                 // After all posts are fetched and added to the data array
-                console.log(data)
                 setPosts(data);
             } catch (error) {
                 console.error('Error fetching data:', error);

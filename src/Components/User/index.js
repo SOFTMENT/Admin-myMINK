@@ -29,7 +29,7 @@ const User = (props) => {
       setIsSearch(true);
       setLastVisible(null)
       setHasMore(false)
-      console.log(state)
+      // console.log(state)
       if (state?.hits?.length) {
         setNoData(false)
         setUsers(state?.hits);
@@ -37,7 +37,7 @@ const User = (props) => {
         setNoData(true);
       }
     } else {
-      console.log("hereeee")
+      // console.log("hereeee")
       fetchUsers();
     }
   }, [state]);
@@ -45,7 +45,7 @@ const User = (props) => {
 
   // }, []); // Trigger fetchUsers when lastVisible changes
   const clearSearch = () => {
-    console.log("clearSearch")
+    // console.log("clearSearch")
     setIsSearch(false)
     setNoData(false)
     setUsers([])
@@ -61,7 +61,7 @@ const User = (props) => {
 
       // If there's a lastVisible document, start after it
       if (lastVisible) {
-        console.log("here")
+        // console.log("here")
         usersQuery = query(
           collection(db, "Users"),
           orderBy("registredAt", "desc"),
@@ -80,7 +80,7 @@ const User = (props) => {
 
       // Extract the users data
       const usersData = usersSnapshot.docs.map((doc) => doc.data());
-      console.log(usersData)
+      // console.log(usersData)
       // Update the users state
       setUsers((prevUsers) => [...prevUsers, ...usersData]);
 

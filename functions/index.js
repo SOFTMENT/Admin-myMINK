@@ -32,7 +32,6 @@ exports.sendNotificationToTopic = functions.https.onRequest((req, res) => {
     // Send notification to the specified topic
     admin.messaging().sendToTopic(topic, payload)
       .then((response) => {
-        console.log('Successfully sent message:', response);
         res.status(200).send('Notification sent successfully');
       })
       .catch((error) => {

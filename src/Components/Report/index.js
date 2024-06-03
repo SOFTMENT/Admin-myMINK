@@ -23,7 +23,6 @@ const Report = () => {
     const [selectedImages,setSelectedImages] = useState([])
     const handleOpenDialog = (images) => {
       setSelectedImages(images.map(item=>`${AWS_IMAGE_BASE_URL}${item}`));
-      console.log(images)
       setImagesOpen(true);
     };
   

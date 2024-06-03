@@ -1,16 +1,15 @@
+import { LocalizationProvider } from '@mui/x-date-pickers';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import { BrowserRouter } from 'react-router-dom';
-import App from './App';
-import 'react-toastify/dist/ReactToastify.css';
 import { ToastContainer } from 'react-toastify';
-import { LocalizationProvider } from '@mui/x-date-pickers';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
+import 'react-toastify/dist/ReactToastify.css';
+import App from './App';
 const root = ReactDOM.createRoot(document.getElementById('root'));
+
+
 root.render(
   <LocalizationProvider dateAdapter={AdapterDayjs}>
-
-    <BrowserRouter>
       <ToastContainer
         position="top-right"
         autoClose={2000}
@@ -24,7 +23,6 @@ root.render(
       />
       <App />
       <ToastContainer />
-    </BrowserRouter>
     </LocalizationProvider>
 
 );

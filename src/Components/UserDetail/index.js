@@ -66,7 +66,7 @@ const UserDetail = () => {
         setUserData(userDocSnapshot.data());
       } else {
         // No data found for the provided user ID
-        console.log("No such document!");
+        // console.log("No such document!");
       }
     } catch (error) {
       console.error("Error getting document:", error);
@@ -126,7 +126,7 @@ const UserDetail = () => {
       await fetchUserData();
       setLoading(false);
     } catch (error) {
-      console.log(error);
+      // console.log(error);
       toast.error("Something went wrong!");
     }
   };
