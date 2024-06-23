@@ -9,40 +9,36 @@
 const admin = require("firebase-admin");
 admin.initializeApp();
 const db = admin.firestore();
-const functions = require('firebase-functions');
-const {onRequest} = require("firebase-functions/v2/https");
-const logger = require("firebase-functions/logger");
-exports.sendNotificationToTopic = functions.https.onRequest((req, res) => {
-    // Extract topic title and message from the request body
-    const { title, message, topic } = req.body;
-  
-    // Check if topic title, message, and topic are provided
-    if (!title || !message || !topic) {
-      return res.status(400).send('Invalid request: title, message, and topic are required');
+const functions = require("firebase-functions");
+var braintree = require("braintree");
+const gateway = new braintree.BraintreeGateway({
+  environment: braintree.Environment.Sandbox, // or braintree.Environment.Production
+  merchantId: "7pybpymmq68k6hwq",
+  publicKey: "x8qj5gjqvsxb2r52",
+  privateKey: "5b7eadea216f99dd50bfe5c6a231c31b",
+});
+exports.getAllSubscriptionPlans = functions.https.onCall(
+  async (data, context) => {
+    try {
+      const result = await gateway.plan.all();
+      return { plans: result };
+    } catch (error) {
+      console.error("Error fetching plans:", error);
+      throw new functions.https.HttpsError("internal", "Error fetching plans");
     }
-  
-    // Message payload
-    const payload = {
-      notification: {
-        title: title,
-        body: message,
-      },
-    };
-  
-    // Send notification to the specified topic
-    admin.messaging().sendToTopic(topic, payload)
-      .then((response) => {
-        res.status(200).send('Notification sent successfully');
-      })
-      .catch((error) => {
-        console.error('Error sending message:', error);
-        res.status(500).send('Error sending notification');
+  }
+);
+exports.updateSubscriptionPlan = functions.https.onCall(
+  async (data, context) => {
+    try {
+      const { price, id } = data;
+      await gateway.plan.update(id, {
+        price: price,
       });
-  });
-// Create and deploy your first functions
-// https://firebase.google.com/docs/functions/get-started
-
-// exports.helloWorld = onRequest((request, response) => {
-//   logger.info("Hello logs!", {structuredData: true});
-//   response.send("Hello from Firebase!");
-// });
+      return { success: true };
+    } catch (error) {
+      console.error("Error fetching plans:", error);
+      throw new functions.https.HttpsError("internal", "Error fetching plans");
+    }
+  }
+);

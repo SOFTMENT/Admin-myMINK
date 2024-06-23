@@ -1,7 +1,12 @@
 import { createTheme, ThemeProvider } from "@mui/material";
 import { onAuthStateChanged } from "firebase/auth";
 import React, { useEffect, useState } from "react";
-import { createBrowserRouter, Navigate, redirect, RouterProvider } from "react-router-dom";
+import {
+  createBrowserRouter,
+  Navigate,
+  redirect,
+  RouterProvider,
+} from "react-router-dom";
 import Coupon from "./Components/Coupon";
 import Home from "./Components/Home";
 import Loader from "./Components/Loader";
@@ -13,6 +18,7 @@ import { auth } from "./config/firebase-config";
 import CommonRoute from "./routes/CommonRoute";
 import "./styles/style.css";
 import colors from "./theme/colors";
+import SubscriptionPlans from "./Components/SubscriptionPlans";
 const NavigateToCorrectPage = () => {
   if (auth.currentUser) {
     return <Navigate to="/" replace />;
@@ -23,43 +29,63 @@ const NavigateToCorrectPage = () => {
 const router = createBrowserRouter([
   {
     path: "/",
-    element:  <CommonRoute authRequire>
-    <Home />
-  </CommonRoute>,
+    element: (
+      <CommonRoute authRequire>
+        <Home />
+      </CommonRoute>
+    ),
   },
   {
     path: "/login",
-    element: <CommonRoute>
-    <Login />
-  </CommonRoute>,
+    element: (
+      <CommonRoute>
+        <Login />
+      </CommonRoute>
+    ),
   },
   {
     path: "/notifications",
-    element: <CommonRoute authRequire>
-    <Notification />
-  </CommonRoute>,
+    element: (
+      <CommonRoute authRequire>
+        <Notification />
+      </CommonRoute>
+    ),
   },
   {
     path: "/reports",
-    element:   <CommonRoute authRequire>
-    <ReportParent />
-  </CommonRoute>,
+    element: (
+      <CommonRoute authRequire>
+        <ReportParent />
+      </CommonRoute>
+    ),
+  },
+  {
+    path: "/subscription-plans",
+    element: (
+      <CommonRoute authRequire>
+        <SubscriptionPlans />
+      </CommonRoute>
+    ),
   },
   {
     path: "/coupons",
-    element:   <CommonRoute authRequire>
-    <Coupon />
-  </CommonRoute>,
+    element: (
+      <CommonRoute authRequire>
+        <Coupon />
+      </CommonRoute>
+    ),
   },
   {
     path: "/user/:userId",
-    element:   <CommonRoute authRequire>
-    <UserDetail />
-  </CommonRoute>,
+    element: (
+      <CommonRoute authRequire>
+        <UserDetail />
+      </CommonRoute>
+    ),
   },
   {
     path: "*",
-    element:   <NavigateToCorrectPage/>,
+    element: <NavigateToCorrectPage />,
   },
 ]);
 const App = () => {
@@ -102,11 +128,8 @@ const App = () => {
   }
   return (
     <ThemeProvider theme={theme}>
-    <RouterProvider router={router}/>
-    
+      <RouterProvider router={router} />
     </ThemeProvider>
   );
 };
 export default App;
-
-
