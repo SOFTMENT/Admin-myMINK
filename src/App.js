@@ -20,6 +20,7 @@ import { auth } from "./config/firebase-config";
 import CommonRoute from "./routes/CommonRoute";
 import "./styles/style.css";
 import colors from "./theme/colors";
+import { AuthContext } from "./Context/AuthContext";
 const NavigateToCorrectPage = () => {
   if (auth.currentUser) {
     return <Navigate to="/" replace />;
@@ -38,11 +39,7 @@ const router = createBrowserRouter([
   },
   {
     path: "/login",
-    element: (
-      <CommonRoute>
-        <Login />
-      </CommonRoute>
-    ),
+    element: <Login />,
   },
   {
     path: "/notifications",
@@ -91,21 +88,6 @@ const router = createBrowserRouter([
 ]);
 const App = () => {
   const [isLoading, setIsLoading] = useState(true);
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      if (user) {
-        const uid = user.uid;
-      } else {
-      }
-    });
-    const timeout = setTimeout(() => {
-      setIsLoading(false);
-    }, 500);
-    return () => {
-      clearTimeout(timeout);
-      unsubscribe();
-    };
-  }, []);
   const theme = createTheme({
     typography: {
       button: {
@@ -126,12 +108,14 @@ const App = () => {
       },
     },
   });
-  if (isLoading) {
-    return <Loader />;
-  }
+  // if (isLoading) {
+  //   return <Loader />;
+  // }
   return (
     <ThemeProvider theme={theme}>
-      <RouterProvider router={router} />
+      <AuthContext>
+        <RouterProvider router={router} />
+      </AuthContext>
     </ThemeProvider>
   );
 };
