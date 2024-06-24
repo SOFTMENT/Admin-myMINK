@@ -4,17 +4,14 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
-  InputLabel,
-  MenuItem,
-  Select,
   Stack,
   TextField,
 } from "@mui/material";
+import { doc, updateDoc } from "firebase/firestore";
 import { httpsCallable } from "firebase/functions";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { db, functions } from "../../../../config/firebase-config";
-import { doc, updateDoc } from "firebase/firestore";
 const plans = [
   {
     id: "ID_LIFETIME",

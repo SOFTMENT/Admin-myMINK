@@ -2,10 +2,11 @@ import { createTheme, ThemeProvider } from "@mui/material";
 import { onAuthStateChanged } from "firebase/auth";
 import React, { useEffect, useState } from "react";
 import {
+  BrowserRouter,
   createBrowserRouter,
   Navigate,
-  redirect,
   RouterProvider,
+  useNavigate,
 } from "react-router-dom";
 import Coupon from "./Components/Coupon";
 import Home from "./Components/Home";
@@ -13,12 +14,12 @@ import Loader from "./Components/Loader";
 import Login from "./Components/Login";
 import Notification from "./Components/Notification";
 import ReportParent from "./Components/ReportParent";
+import SubscriptionPlans from "./Components/SubscriptionPlans";
 import UserDetail from "./Components/UserDetail";
 import { auth } from "./config/firebase-config";
 import CommonRoute from "./routes/CommonRoute";
 import "./styles/style.css";
 import colors from "./theme/colors";
-import SubscriptionPlans from "./Components/SubscriptionPlans";
 const NavigateToCorrectPage = () => {
   if (auth.currentUser) {
     return <Navigate to="/" replace />;
@@ -90,6 +91,21 @@ const router = createBrowserRouter([
 ]);
 const App = () => {
   const [isLoading, setIsLoading] = useState(true);
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        const uid = user.uid;
+      } else {
+      }
+    });
+    const timeout = setTimeout(() => {
+      setIsLoading(false);
+    }, 500);
+    return () => {
+      clearTimeout(timeout);
+      unsubscribe();
+    };
+  }, []);
   const theme = createTheme({
     typography: {
       button: {
@@ -110,19 +126,6 @@ const App = () => {
       },
     },
   });
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      if (user) {
-        const uid = user.uid;
-        setIsLoading(false);
-        redirect("/");
-      } else {
-        setIsLoading(false);
-        redirect("/login");
-      }
-    });
-    return unsubscribe;
-  }, []);
   if (isLoading) {
     return <Loader />;
   }
