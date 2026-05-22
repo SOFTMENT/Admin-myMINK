@@ -14,6 +14,7 @@ import { db } from "../../config/firebase-config";
 import { Button, LinearProgress, Typography } from "@mui/material";
 import { AWS_IMAGE_BASE_URL } from "../../config/appConfig";
 import { useLocation, useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 const User = (props) => {
   const [lastVisible, setLastVisible] = useState(null);
@@ -27,11 +28,11 @@ const User = (props) => {
   useEffect(() => {
     if (state) {
       setIsSearch(true);
-      setLastVisible(null)
-      setHasMore(false)
+      setLastVisible(null);
+      setHasMore(false);
       // console.log(state)
       if (state?.hits?.length) {
-        setNoData(false)
+        setNoData(false);
         setUsers(state?.hits);
       } else {
         setNoData(true);
@@ -46,15 +47,14 @@ const User = (props) => {
   // }, []); // Trigger fetchUsers when lastVisible changes
   const clearSearch = () => {
     // console.log("clearSearch")
-    setIsSearch(false)
-    setNoData(false)
-    setUsers([])
-    setTimeout(()=>{
-      fetchUsers()
-    },1000)
-  }
+    setIsSearch(false);
+    setNoData(false);
+    setUsers([]);
+    setTimeout(() => {
+      fetchUsers();
+    }, 1000);
+  };
   const fetchUsers = async () => {
-    
     try {
       // Define a query to order users by some field (e.g., createdAt)
       let usersQuery;
@@ -92,6 +92,8 @@ const User = (props) => {
       setHasMore(usersSnapshot.docs.length === 18);
     } catch (error) {
       console.error("Error fetching users:", error);
+      toast.error("Error loading users. Please refresh the page.");
+      setHasMore(false);
     }
   };
   const fetchMoreData = async () => {
@@ -105,69 +107,93 @@ const User = (props) => {
     event.preventDefault();
     navigate(`/user/${user.uid}`);
   };
- 
+
   return (
     <div className="userprofilebody">
       <div className="mainheading">
-        <h3>User</h3>
-       {
-        isSearch&&
-        <Button variant="outlined" color="error" sx={{color:'red'}} onClick={()=>clearSearch()}>
-        Clear Search
-      </Button>
-       }
-      </div>
-      {
-        noData?
-        <div
-        style={{
-          display: "flex",
-          flex: 1,
-          height: "60vh",
-          justifyContent: "center",
-          alignItems: "center",
-        }}
-      >
-        <Typography>No Results Found</Typography>
-      </div>:
-      <InfiniteScroll
-      dataLength={users.length} // This is important field to render the next data
-      next={fetchMoreData}
-      hasMore={isSearch ? false : hasMore}
-      loader={<LinearProgress color="error" />}
-      // endMessage={<p>No more users to load</p>}
-      //scrollThreshold={0.9} // Load more data when 90% of the page is scrolled
-    >
-      <div className="row">
-        {users.map((user, index) => (
-          <div
-            className="col-xxl-3 col-xl-3 col-lg-4 col-md-6"
-            key={user.uid}
-            onClick={(event) => handleClick(event, user)}
+        <h3>Users</h3>
+        {isSearch && (
+          <Button
+            variant="outlined"
+            color="error"
+            sx={{ color: "red" }}
+            onClick={() => clearSearch()}
           >
-            <a href="">
-              <div className="userprofilewrap">
-                <div className="userimg">
-                  <img
-                    src={
-                      user.profilePic
-                        ? `${AWS_IMAGE_BASE_URL}${user.profilePic}`
-                        : "assets/images/userprofile.png"
-                    }
-                    alt=""
-                  />
-                </div>
-                <h4>{user.fullName}</h4>
-                <h6>{user?.phoneNumber ? user.phoneNumber : user.email}</h6>
-                <h6>@{user?.username}</h6>
-              </div>
-            </a>
-          </div>
-        ))}
+            Clear Search
+          </Button>
+        )}
       </div>
-    </InfiniteScroll>
-      }
-      
+      {noData ? (
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            flex: 1,
+            height: "60vh",
+            justifyContent: "center",
+            alignItems: "center",
+            gap: "10px",
+          }}
+        >
+          <Typography variant="h6" sx={{ color: '#666' }}>No Results Found</Typography>
+          <Typography variant="body2" sx={{ color: '#999' }}>Try a different search term</Typography>
+          <Button variant="outlined" onClick={clearSearch} sx={{ marginTop: 2 }}>
+            Clear Search
+          </Button>
+        </div>
+      ) : users.length === 0 && !isSearch ? (
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            flex: 1,
+            height: "60vh",
+            justifyContent: "center",
+            alignItems: "center",
+            gap: "10px",
+          }}
+        >
+          <Typography variant="h6" sx={{ color: '#666' }}>No Users Found</Typography>
+          <Typography variant="body2" sx={{ color: '#999' }}>Users will appear here once they register</Typography>
+        </div>
+      ) : (
+        <InfiniteScroll
+          dataLength={users.length} // This is important field to render the next data
+          next={fetchMoreData}
+          hasMore={isSearch ? false : hasMore}
+          loader={<LinearProgress color="error" />}
+          // endMessage={<p>No more users to load</p>}
+          //scrollThreshold={0.9} // Load more data when 90% of the page is scrolled
+        >
+          <div className="row">
+            {users.map((user, index) => (
+              <div
+                className="col-xxl-3 col-xl-3 col-lg-4 col-md-6"
+                key={user.uid}
+                onClick={(event) => handleClick(event, user)}
+              >
+                <a href="">
+                  <div className="userprofilewrap">
+                    <div className="userimg">
+                      <img
+                        src={
+                          user.profilePic
+                            ? `${AWS_IMAGE_BASE_URL}${user.profilePic}`
+                            : "assets/images/userprofile.png"
+                        }
+                        alt=""
+                      />
+                    </div>
+                    <h4>{user.fullName}</h4>
+                    <h6>{user?.phoneNumber ? user.phoneNumber : user.email}</h6>
+                    <h6>@{user?.username}</h6>
+                  </div>
+                </a>
+              </div>
+            ))}
+          </div>
+        </InfiniteScroll>
+      )}
 
       {/* <div className="pagination">
     <a  href="#">&laquo;</a>

@@ -23,8 +23,17 @@ const firebaseConfig = {
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app)
-const auth = getAuth()
+const auth = getAuth(app)
 const storage = getStorage(app)
-const functions = getFunctions(app)
-export {db,auth,storage,functions}
-const analytics = getAnalytics(app);
+
+// Cloud Functions (explicit regions used by this admin panel)
+const functionsAus = getFunctions(app, "australia-southeast1");
+const functionsAsiaEast1 = getFunctions(app, "asia-east1");
+const functions = getFunctions(app); // default (keep for backward compatibility)
+
+export {app, db, auth, storage, functions, functionsAus, functionsAsiaEast1}
+
+// Analytics can throw in non-browser contexts; best-effort.
+try {
+  getAnalytics(app);
+} catch (_) {}

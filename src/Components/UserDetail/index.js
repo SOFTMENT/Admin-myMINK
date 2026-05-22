@@ -1,23 +1,12 @@
-import {
-  collection,
-  deleteDoc,
-  doc,
-  getDoc,
-  getDocs,
-  query,
-  setDoc,
-  updateDoc,
-  where,
-} from "firebase/firestore";
-import { useEffect, useState } from "react";
+import { doc, getDoc } from "firebase/firestore";
+import { useEffect, useState, useCallback } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { auth, db, functions } from "../../config/firebase-config";
-import { CircularProgress, Icon, IconButton } from "@mui/material";
+import { auth, db, functionsAus } from "../../config/firebase-config";
+import { CircularProgress, IconButton } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { AWS_IMAGE_BASE_URL } from "../../config/appConfig";
 import dayjs from "dayjs";
 import { toast } from "react-toastify";
-import { deleteUser } from "firebase/auth";
 import AccountCircleOutlinedIcon from "@mui/icons-material/AccountCircleOutlined";
 import EmailOutlinedIcon from "@mui/icons-material/EmailOutlined";
 import LocalPhoneOutlinedIcon from "@mui/icons-material/LocalPhoneOutlined";
@@ -33,31 +22,21 @@ import {
   DialogTitle,
   TextField,
 } from "@mui/material";
-import { getFunctions, httpsCallable } from "firebase/functions";
+import { httpsCallable } from "firebase/functions";
+
 const UserDetail = () => {
   const { userId } = useParams();
   const [userData, setUserData] = useState(null);
   const navigate = useNavigate();
   const [confirmationText, setConfirmationText] = useState("");
   const [isOpen, setIsOpen] = useState(false);
-  const [loading, setLoading] = useState(false);
-  useEffect(() => {
-    fetchUserData();
+  const [deleteLoading, setDeleteLoading] = useState(false);
+  const [blockLoading, setBlockLoading] = useState(false);
+  const [fetchingUser, setFetchingUser] = useState(true);
 
-    // Clean up function to unsubscribe from Firestore listener
-    return () => {
-      // Any cleanup code here
-    };
-  }, [userId]);
-  const openModal = () => {
-    setIsOpen(true);
-  };
-
-  const closeModal = () => {
-    setIsOpen(false);
-  };
-  const fetchUserData = async () => {
+  const fetchUserData = useCallback(async () => {
     try {
+      setFetchingUser(true);
       const userDocRef = doc(db, "Users", userId); // Reference to the document with userId
       const userDocSnapshot = await getDoc(userDocRef); // Get the document snapshot
 
@@ -66,11 +45,32 @@ const UserDetail = () => {
         setUserData(userDocSnapshot.data());
       } else {
         // No data found for the provided user ID
-        // console.log("No such document!");
+        toast.error("User not found");
+        navigate(-1);
       }
     } catch (error) {
       console.error("Error getting document:", error);
+      toast.error("Error loading user data");
+    } finally {
+      setFetchingUser(false);
     }
+  }, [userId, navigate]);
+
+  useEffect(() => {
+    fetchUserData();
+
+    // Log current user UID for admin setup (remove after setup)
+    if (auth.currentUser) {
+      console.log("Your UID for admin setup:", auth.currentUser.uid);
+    }
+  }, [fetchUserData]);
+  const openModal = () => {
+    setIsOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsOpen(false);
+    setConfirmationText("");
   };
   const handleClick = (event) => {
     event.preventDefault();
@@ -89,19 +89,23 @@ const UserDetail = () => {
     if (confirmationText === "confirm") {
       //   onDelete();
       try {
-        setLoading(true);
-        const deleteUserAccount = httpsCallable(functions, "deleteUserAccount");
+        setDeleteLoading(true);
+        const deleteUserAccount = httpsCallable(
+          functionsAus,
+          "deleteUserAccount"
+        );
         await deleteUserAccount({
           userId,
           username: userData.username,
         });
-        toast.error("User deleted!");
+        toast.success("User deleted!");
         closeModal();
         navigate(-1);
       } catch (error) {
-        toast.error("Something went wrong!");
+        console.error("Delete error:", error);
+        toast.error(error?.message || "Something went wrong!");
       } finally {
-        setLoading(false);
+        setDeleteLoading(false);
       }
     }
   };
@@ -112,22 +116,30 @@ const UserDetail = () => {
   const handleBlock = async (event) => {
     event.preventDefault();
     try {
-      setLoading(true);
+      setBlockLoading(true);
       const toggleUserBlockStatus = httpsCallable(
-        functions,
+        functionsAus,
         "toggleUserBlockStatus"
       );
       await toggleUserBlockStatus({
         userId,
       });
-      if (userData.isBlocked) toast.success("User unblocked!");
-      else toast.error("User blocked!");
+      if (userData.isBlocked) {
+        toast.success("User unblocked successfully!");
+      } else {
+        toast.success("User blocked successfully!");
+      }
 
       await fetchUserData();
-      setLoading(false);
+      setBlockLoading(false);
     } catch (error) {
-      // console.log(error);
-      toast.error("Something went wrong!");
+      console.error("Block error:", error);
+      const errorMessage =
+        error?.message ||
+        error?.error ||
+        "Failed to update user status. Please try again.";
+      toast.error(errorMessage);
+      setBlockLoading(false);
     }
   };
   const handleContactButtonClick = () => {
@@ -139,9 +151,45 @@ const UserDetail = () => {
       window.open(`tel:${userData?.phoneNumber}`, "_blank");
     } else {
       // Handle case when neither email nor phone number is provided
-      console.error("No email or phone provided for contact");
+      toast.error("No contact information available for this user");
     }
   };
+
+  if (fetchingUser) {
+    return (
+      <div
+        className="userprofilebody"
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          minHeight: "60vh",
+        }}
+      >
+        <CircularProgress />
+      </div>
+    );
+  }
+
+  if (!userData) {
+    return (
+      <div className="userprofilebody">
+        <IconButton onClick={handleClick}>
+          <ArrowBackIcon />
+        </IconButton>
+        <div style={{ textAlign: "center", padding: "40px" }}>
+          <h3>User not found</h3>
+          <Button
+            onClick={handleClick}
+            variant="contained"
+            sx={{ marginTop: 2 }}
+          >
+            Go Back
+          </Button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="userprofilebody">
@@ -188,26 +236,30 @@ const UserDetail = () => {
                   </li>
                   <li>@{userData?.username}</li>
                 </div>
-                <div className="informationbody">
-                  <li>
-                    <span>
-                      {" "}
-                      <EmailOutlinedIcon htmlColor="#A9A9A9" />
-                    </span>
-                    Email
-                  </li>
-                  <li>{userData?.email}</li>
-                </div>
-                <div className="informationbody">
-                  <li>
-                    <span>
-                      {" "}
-                      <LocalPhoneOutlinedIcon htmlColor="#A9A9A9" />
-                    </span>
-                    Phone
-                  </li>
-                  <li>{userData?.phoneNumber}</li>
-                </div>
+                {userData?.email && (
+                  <div className="informationbody">
+                    <li>
+                      <span>
+                        {" "}
+                        <EmailOutlinedIcon htmlColor="#A9A9A9" />
+                      </span>
+                      Email
+                    </li>
+                    <li>{userData?.email}</li>
+                  </div>
+                )}
+                {userData?.phoneNumber && (
+                  <div className="informationbody">
+                    <li>
+                      <span>
+                        {" "}
+                        <LocalPhoneOutlinedIcon htmlColor="#A9A9A9" />
+                      </span>
+                      Phone
+                    </li>
+                    <li>{userData?.phoneNumber}</li>
+                  </div>
+                )}
                 <div className="informationbody">
                   <li>
                     <span>
@@ -232,18 +284,26 @@ const UserDetail = () => {
                         </div> */}
               </ul>
               <div className="profilebutton">
-                <button onClick={handleContactButtonClick}>
+                <button
+                  onClick={handleContactButtonClick}
+                  disabled={!userData?.email && !userData?.phoneNumber}
+                  title={
+                    !userData?.email && !userData?.phoneNumber
+                      ? "No contact information available"
+                      : "Contact user"
+                  }
+                >
                   <LocalPhoneOutlinedIcon htmlColor="#A9A9A9" />
                   Contact
                 </button>
-                <button disabled={loading} onClick={handleBlock}>
+                <button disabled={blockLoading} onClick={handleBlock}>
                   {userData?.isBlocked ? (
                     <CheckCircleOutlineOutlinedIcon htmlColor="green" />
                   ) : (
                     <CancelOutlinedIcon htmlColor="red" />
                   )}
                   {userData?.isBlocked ? "Unblock" : "Block"}
-                  {loading && (
+                  {blockLoading && (
                     <CircularProgress size={20} sx={{ color: "red" }} />
                   )}
                 </button>
@@ -259,6 +319,11 @@ const UserDetail = () => {
       <Dialog open={isOpen} onClose={closeModal}>
         <DialogTitle>Delete Confirmation</DialogTitle>
         <DialogContent>
+          <DialogContentText sx={{ marginBottom: 2 }}>
+            <strong>Warning:</strong> This action cannot be undone. This will
+            permanently delete the user account and all associated data
+            including posts, comments, likes, and other content.
+          </DialogContentText>
           <DialogContentText>
             To confirm deletion, please type <strong>"confirm"</strong> in the
             input field below:
@@ -273,17 +338,17 @@ const UserDetail = () => {
           />
         </DialogContent>
         <DialogActions>
-          <Button onClick={closeModal} color="primary" disabled={loading}>
+          <Button onClick={closeModal} color="primary" disabled={deleteLoading}>
             Cancel
           </Button>
           <Button
             endIcon={
-              loading ? (
+              deleteLoading ? (
                 <CircularProgress size={20} sx={{ color: "white" }} />
               ) : null
             }
             onClick={handleDelete}
-            disabled={loading}
+            disabled={deleteLoading || confirmationText !== "confirm"}
             color="error"
             variant="contained"
           >

@@ -23,15 +23,8 @@ export const sideBarMenu = [
     icon: "bx-file",
     path: "/reports",
   },
-  {
-    name: "Subscription Plans",
-    index: 3,
-    icon: "bx-crown",
-    path: "/subscription-plans",
-  },
 ];
 export const AWS_VIDEO_BASE_URL =
-  "https://d3uhzx9vktk5vy.cloudfront.net/public/";
+  "https://res.cloudinary.com/dyzki97p7/video/upload/w_540/q_auto:eco/v1758904461/";
 
-export const AWS_IMAGE_BASE_URL =
-  "https://d1bak4qdzgw57r.cloudfront.net/public/";
+export const AWS_IMAGE_BASE_URL = "https://d34hi5x7melm0j.cloudfront.net/";

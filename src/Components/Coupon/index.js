@@ -4,35 +4,36 @@ import {
   DialogContent,
   DialogTitle,
   LinearProgress,
-  Stack
+  Stack,
+  CircularProgress,
 } from "@mui/material";
-import { DatePicker } from "@mui/x-date-pickers/DatePicker";
-import dayjs from "dayjs";
 import { collection, onSnapshot, orderBy, query } from "firebase/firestore";
 import { httpsCallable } from "firebase/functions";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
-import { db, functions } from "../../config/firebase-config";
+import { db, functionsAus, functionsAsiaEast1 } from "../../config/firebase-config";
+
 const Coupon = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const [expiryDate, setExpiryDate] = useState(dayjs(new Date()));
-  const [discountPercentage, setDiscountPercentage] = useState("");
   const [dataLoading, setDataLoading] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [allCoupons,setAllCoupons] = useState([])
-  useEffect(()=>{
-    setDataLoading(true)
-    const q = query(collection(db, "Coupons"),orderBy("createDate","desc"));
+  const [deletingCouponId, setDeletingCouponId] = useState(null);
+  const [allCoupons, setAllCoupons] = useState([]);
+
+  useEffect(() => {
+    setDataLoading(true);
+    const q = query(collection(db, "Coupons"), orderBy("createDate", "desc"));
     const unsubscribe = onSnapshot(q, (querySnapshot) => {
       const coupons = [];
       querySnapshot.forEach((doc) => {
-          coupons.push(doc.data());
+        coupons.push(doc.data());
       });
-      setAllCoupons(coupons)
-      setDataLoading(false)
+      setAllCoupons(coupons);
+      setDataLoading(false);
     });
-    return unsubscribe
-  },[])
+    return unsubscribe;
+  }, []);
+
   const openModal = () => {
     setIsOpen(true);
   };
@@ -40,53 +41,49 @@ const Coupon = () => {
   const closeModal = () => {
     setIsOpen(false);
   };
-  //createCoupon
-  const handleSubmit = async(event) => {
+
+  // createCoupon
+  const handleSubmit = async (event) => {
     event.preventDefault();
-    // if (discountPercentage >= 1 && discountPercentage <= 100) {
-      try {
-      setLoading(true)
-      const createCoupon = httpsCallable(functions, 'createCoupon');
+    try {
+      setLoading(true);
+      const createCoupon = httpsCallable(functionsAsiaEast1, "createCoupon");
       await createCoupon({
-        expiryDate:expiryDate.toDate().toISOString(),
-        length:6
-      })
-      closeModal()
-      setDiscountPercentage("")
-      setExpiryDate(dayjs(new Date()))
-      toast.success("Coupon created!")
-      } catch (error) {
-        console.log(error)
-        toast.error("Something went wrong!")
-      }
-      finally{
-      setLoading(false)
-      }
-    // }
-    // else{
-    //   toast.error("Please enter a valid discount percentage.")
-    // }
-  };
-  //deleteCoupon
-  const handleDelete = async(id) => {
-   try {
-    const deleteCoupon = httpsCallable(functions, 'deleteCoupon');
-    await deleteCoupon({
-      couponId:id
-    })
-    toast.error("Coupon deleted!")
-   } catch (error) {
-    toast.error("Something went wrong!")
-   }
-  }
-  function generateRandomCoupon(length) {
-    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-    let coupon = '';
-    for (let i = 0; i < length; i++) {
-        coupon += characters.charAt(Math.floor(Math.random() * characters.length));
+        length: 6,
+      });
+      closeModal();
+      toast.success("Coupon created successfully!");
+    } catch (error) {
+      console.error("Create coupon error:", error);
+      const errorMessage = error?.message || error?.error || "Failed to create coupon. Please try again.";
+      toast.error(errorMessage);
+    } finally {
+      setLoading(false);
     }
-    return coupon;
-}
+  };
+
+  // deleteCoupon
+  const handleDelete = async (id) => {
+    if (window.confirm("Are you sure you want to delete this coupon? This action cannot be undone.")) {
+      try {
+        setDeletingCouponId(id);
+        const deleteCoupon = httpsCallable(functionsAus, "deleteCoupon");
+        await deleteCoupon({
+          couponId: id,
+        });
+        // Remove from local state immediately for better UX
+        setAllCoupons(allCoupons.filter((coupon) => coupon.id !== id));
+        toast.success("Coupon deleted successfully!");
+      } catch (error) {
+        console.error("Delete coupon error:", error);
+        const errorMessage = error?.message || error?.error || "Failed to delete coupon. Please try again.";
+        toast.error(errorMessage);
+      } finally {
+        setDeletingCouponId(null);
+      }
+    }
+  };
+
   return (
     <div>
       <div className="userprofilebody">
@@ -98,31 +95,46 @@ const Coupon = () => {
           </button>
         </div>
         <div className="row">
-          {
-            dataLoading?
-            <LinearProgress color="error"/>:
-            allCoupons.map(item=>{
-              return(
-                <div className="col-xxl-3 col-xl-4 col-lg-4 col-md-6" key={item.id}>
-                <div className="userprofilewrap userimgcoupon">
-                  <div className="userimg">
-                    <img src="assets/images/icons/coupon.svg" alt="" />
+          {dataLoading ? (
+            <LinearProgress color="error" />
+          ) : allCoupons.length === 0 ? (
+            <div style={{ width: '100%', textAlign: 'center', padding: '40px', color: '#999' }}>
+              <p>No coupons created yet</p>
+              <p style={{ fontSize: '14px', marginTop: '10px' }}>Click "Add New Coupon" to create one</p>
+            </div>
+          ) : (
+            allCoupons.map((item) => {
+              return (
+                <div
+                  className="col-xxl-3 col-xl-4 col-lg-4 col-md-6"
+                  key={item.id}
+                >
+                  <div className="userprofilewrap userimgcoupon">
+                    <div className="userimg">
+                      <img src="assets/images/icons/coupon.svg" alt="" />
+                    </div>
+                    <h2>100%</h2>
+                    <h6>{item.id}</h6>
+                    <b>Lifetime (until redeemed)</b>
+                    <button 
+                      onClick={() => handleDelete(item.id)}
+                      disabled={deletingCouponId === item.id}
+                      title={deletingCouponId === item.id ? "Deleting..." : "Delete coupon"}
+                    >
+                      {deletingCouponId === item.id ? (
+                        <CircularProgress size={20} sx={{ color: "white" }} />
+                      ) : (
+                        <img src="assets/images/icons/deletecoupon.svg" alt="" />
+                      )}
+                    </button>
                   </div>
-                  <h2>100%</h2>
-                  <h6>{item.id}</h6>
-                  <b>{dayjs(item.expiryDate.toDate()).format('DD MMMM YYYY')}</b>
-                  <button onClick={()=>handleDelete(item.id)}>
-                    <img src="assets/images/icons/deletecoupon.svg" alt="" />{" "}
-                  </button>
                 </div>
-              </div>
-              )
+              );
             })
-          }
+          )}
         </div>
       </div>
-      {/* <!-- Modal Popup -->
-        <!-- Modal --> */}
+
       {/* Dialog */}
       <Dialog
         open={isOpen}
@@ -137,48 +149,35 @@ const Coupon = () => {
             <button
               type="button"
               onClick={closeModal}
-              class="btn-close"
+              className="btn-close"
               aria-label="Close"
             ></button>
           </Stack>
         </DialogTitle>
         <DialogContent>
-          {/* <TextField
-            autoFocus
-            margin="dense"
-            id="discount"
-            label="Discount Percentage"
-            type="number" // Use type="number" to restrict input to numeric values
-            fullWidth
-            inputProps={{ min: "0", max: "100" }} // Set the minimum and maximum values
-            value={discountPercentage}
-            onChange={(event) => {
-              const input = event.target.value;
-              // Validate input to ensure it's a number and within the range 0 to 100
-              if (!isNaN(input) && input >= 0 && input <= 100) {
-                setDiscountPercentage(input);
-              }
-            }}
-          /> */}
-
-          <DatePicker
-            label="Expiry Date"
-            sx={{ marginTop: "20px", width: "100%" }}
-            value={expiryDate}
-            minDate={dayjs(new Date())}
-            onChange={(newValue) => setExpiryDate(newValue)}
-          />
+          <p style={{ marginTop: "12px", marginBottom: 0 }}>
+            This coupon will stay valid until someone redeems it.
+          </p>
         </DialogContent>
         <DialogActions sx={{ justifyContent: "center" }}>
-          {/* <Button onClick={closeModal} color="primary" variant="contained">
-                        Cancel
-                    </Button> */}
-          <button disabled={loading} className="myminkbutton" onClick={handleSubmit}>
-            Add
+          <button
+            disabled={loading}
+            className="myminkbutton"
+            onClick={handleSubmit}
+          >
+            {loading ? (
+              <>
+                <CircularProgress size={20} sx={{ color: "white", marginRight: 1 }} />
+                Creating...
+              </>
+            ) : (
+              "Add"
+            )}
           </button>
         </DialogActions>
       </Dialog>
     </div>
   );
 };
+
 export default Coupon;

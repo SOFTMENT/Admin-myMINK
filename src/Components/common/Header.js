@@ -17,17 +17,17 @@ const Header = () => {
     }
     const handleSubmit = (event) => {
       event.preventDefault()
-      index.search(term).then(({ hits }) => {
-        
-        navigate('/',{state:{hits,term}})
+      if (!term || !term.trim()) {
+        return;
+      }
+      index.search(term.trim()).then(({ hits }) => {
+        navigate('/',{state:{hits,term: term.trim()}})
         setTerm("")
-        // if (hits.length == 0) setNoData(true);
-        // else setNoData(false);
-        // hits.map(hit=>console.log(hit))
-        // setHits(hits.filter(hit=>hit.membershipActive));
-        // // if(hits.length >0){
-        // //   handleSearchHistory(hits,term)
-        // // }
+      }).catch((error) => {
+        console.error("Search error:", error);
+        // Search will still navigate, but with empty results
+        navigate('/',{state:{hits:[],term: term.trim()}})
+        setTerm("")
       });
     }
     const handleChange = event => {

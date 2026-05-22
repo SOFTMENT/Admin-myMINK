@@ -14,7 +14,7 @@ import Loader from "./Components/Loader";
 import Login from "./Components/Login";
 import Notification from "./Components/Notification";
 import ReportParent from "./Components/ReportParent";
-import SubscriptionPlans from "./Components/SubscriptionPlans";
+
 import UserDetail from "./Components/UserDetail";
 import { auth } from "./config/firebase-config";
 import CommonRoute from "./routes/CommonRoute";
@@ -57,14 +57,7 @@ const router = createBrowserRouter([
       </CommonRoute>
     ),
   },
-  {
-    path: "/subscription-plans",
-    element: (
-      <CommonRoute authRequire>
-        <SubscriptionPlans />
-      </CommonRoute>
-    ),
-  },
+
   {
     path: "/coupons",
     element: (
