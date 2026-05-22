@@ -3,9 +3,8 @@ import { sideBarMenu } from "../../config/appConfig";
 import { useLocation, useNavigate } from "react-router-dom";
 import { getAuth } from "firebase/auth";
 
-const SideDrawer = ({ selectedTab, setSelectedTab }) => {
+const SideDrawer = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const navigation = useNavigate();
   const location = useLocation();
   const activePath = location.pathname;
   const navigate = useNavigate();
@@ -13,8 +12,7 @@ const SideDrawer = ({ selectedTab, setSelectedTab }) => {
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
   };
-  const logout = async (event) => {
-    event.preventDefault();
+  const logout = async () => {
     await getAuth()
       .signOut()
       .then(() => {
@@ -40,19 +38,20 @@ const SideDrawer = ({ selectedTab, setSelectedTab }) => {
               return (
                 <li
                   className={`nav-link ${
-                    activePath == item.path ? "active" : ""
+                    activePath === item.path ? "active" : ""
                   }`}
                   key={item.index}
                 >
-                  <a
+                  <button
+                    type="button"
                     onClick={() => {
                       toggleSidebar();
-                      navigation(item.path);
+                      navigate(item.path);
                     }}
                   >
                     <i className={`bx ${item.icon} icon`}></i>
                     <span className="text nav-text">{item.name}</span>
-                  </a>
+                  </button>
                 </li>
               );
             })}
@@ -61,10 +60,10 @@ const SideDrawer = ({ selectedTab, setSelectedTab }) => {
 
         <div className="bottom-content">
           <li className="">
-            <a onClick={logout}>
+            <button type="button" onClick={logout}>
               <i className="bx bx-log-out icon"></i>
               <span className="text nav-text">Logout</span>
-            </a>
+            </button>
           </li>
 
           {/* <li className="mode">

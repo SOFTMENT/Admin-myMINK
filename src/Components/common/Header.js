@@ -1,8 +1,6 @@
-import { AddCircleOutline } from "@mui/icons-material"
-import { AppBar, Autocomplete, Box, CardMedia, Icon, IconButton, TextField, Typography } from "@mui/material"
 import algoliasearch from "algoliasearch";
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom"
+import { useNavigate } from "react-router-dom"
 const algoliaClient = algoliasearch(
   "9XQY8DOXRV",
   "0904fb732ab2992c81a3129991bb5100"
@@ -11,8 +9,7 @@ const index = algoliaClient.initIndex("Users");
 const Header = () => {
     const navigate = useNavigate()
     const [term,setTerm] = useState("")
-    const handleNavigate = (event) => {
-        event.preventDefault()
+    const handleNavigate = () => {
         navigate("/notifications")
     }
     const handleSubmit = (event) => {
@@ -48,9 +45,9 @@ const Header = () => {
       </form>
       <div className="notificationsetting">
         {/* <img src="assets/images/icons/messagetop.svg" alt=""/> */}
-        <a onClick={handleNavigate}>
-        <img src="assets/images/icons/notification.svg" alt=""/>
-        </a>
+        <button type="button" onClick={handleNavigate} aria-label="Notifications">
+          <img src="assets/images/icons/notification.svg" alt=""/>
+        </button>
       </div>
     </div>
     )

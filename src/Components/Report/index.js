@@ -1,41 +1,30 @@
-import { Dropdown } from "@mui/base/Dropdown";
 import YouTubeIcon from "@mui/icons-material/YouTube";
+import MoreVertIcon from "@mui/icons-material/MoreVert";
 import {
-  IconButton,
-  LinearProgress,
-  MenuItem,
-  Menu,
   Button,
   CircularProgress,
-  Tabs,
-  Tab,
-  Typography,
-} from "@mui/material";
-import {
-  collection,
-  deleteDoc,
-  doc,
-  getDoc,
-  getDocs,
-} from "firebase/firestore";
-import React, { useEffect, useState } from "react";
-import { AWS_IMAGE_BASE_URL, AWS_VIDEO_BASE_URL } from "../../config/appConfig";
-import { db, functions } from "../../config/firebase-config";
-import MoreVertIcon from "@mui/icons-material/MoreVert";
-import { toast } from "react-toastify";
-import {
   Dialog,
   DialogActions,
   DialogContent,
   DialogContentText,
   DialogTitle,
+  LinearProgress,
+  Menu,
+  MenuItem,
   TextField,
-  Grid,
+  Typography,
 } from "@mui/material";
-import ReactSimpleImageViewer from "react-simple-image-viewer";
-import CommentReport from "../CommentReport";
+import { collection, doc, getDoc, getDocs } from "firebase/firestore";
 import { httpsCallable } from "firebase/functions";
-import { functionsAus, functionsAsiaEast1 } from "../../config/firebase-config";
+import React, { useEffect, useState } from "react";
+import ReactSimpleImageViewer from "react-simple-image-viewer";
+import { toast } from "react-toastify";
+import { AWS_IMAGE_BASE_URL, AWS_VIDEO_BASE_URL } from "../../config/appConfig";
+import {
+  db,
+  functionsAus,
+  functionsAsiaEast1,
+} from "../../config/firebase-config";
 
 const Report = () => {
   const [posts, setPosts] = useState([]);
@@ -221,30 +210,38 @@ const Report = () => {
                   <div
                     className="reportimg"
                     style={
-                      post.postType == "text" || post.postType == "video"
+                      post.postType === "text" || post.postType === "video"
                         ? { position: "relative" }
                         : {}
                     }
                   >
-                    {post.postType == "image" ? (
-                      <a onClick={() => handleOpenDialog(post.postImages)}>
+                    {post.postType === "image" ? (
+                      <button
+                        type="button"
+                        className="media-button"
+                        onClick={() => handleOpenDialog(post.postImages)}
+                      >
                         {" "}
                         <img
                           src={AWS_IMAGE_BASE_URL + post.postImages[0]}
                           alt=""
                         />
-                      </a>
-                    ) : post.postType == "video" ? (
-                      <a onClick={(event) => handleThumbnailClick(event, post)}>
+                      </button>
+                    ) : post.postType === "video" ? (
+                      <button
+                        type="button"
+                        className="media-button"
+                        onClick={(event) => handleThumbnailClick(event, post)}
+                      >
                         <img
                           src={AWS_IMAGE_BASE_URL + post.videoImage}
                           alt=""
                         />
-                      </a>
+                      </button>
                     ) : (
                       <img src={"assets/images/profilecover.png"} alt="" />
                     )}
-                    {post.postType == "text" && (
+                    {post.postType === "text" && (
                       <p
                         style={{
                           position: "absolute",
@@ -255,7 +252,7 @@ const Report = () => {
                         {post?.caption}
                       </p>
                     )}
-                    {post.postType == "video" && (
+                    {post.postType === "video" && (
                       <YouTubeIcon
                         sx={{
                           position: "absolute",
@@ -266,13 +263,18 @@ const Report = () => {
                       />
                     )}
                   </div>
-                  {post.postType != "text" && <p>{post?.caption}</p>}
+                  {post.postType !== "text" && <p>{post?.caption}</p>}
 
                   <span>
                     <p>{post.reason}</p>
-                    <a onClick={handleClick}>
+                    <button
+                      type="button"
+                      className="icon-menu-button"
+                      onClick={handleClick}
+                      aria-label="Open report actions"
+                    >
                       <MoreVertIcon />
-                    </a>
+                    </button>
                     <Menu
                       id="basic-menu"
                       anchorEl={anchorEl}

@@ -213,30 +213,37 @@ body.dark .sidebar header .toggle {
     transition: var(--tran-05);
 }
 
-.sidebar li a {
+.sidebar li a,
+.sidebar li button {
     list-style: none;
     background-color: transparent;
     display: flex;
     align-items: center;
     height: 100%;
     width: 100%;
+    border: 0;
     border-radius: 6px;
     text-decoration: none;
     transition: var(--tran-03);
 }
 
-.sidebar li a:hover {
+.sidebar li a:hover,
+.sidebar li button:hover {
     background-color: rgb(210, 0, 1);
     border-radius: 9px;
 }
 
 .sidebar li a:hover .icon,
-.sidebar li a:hover .text {
+.sidebar li a:hover .text,
+.sidebar li button:hover .icon,
+.sidebar li button:hover .text {
     color: var(--sidebar-color);
 }
 
 body.dark .sidebar li a:hover .icon,
-body.dark .sidebar li a:hover .text {
+body.dark .sidebar li a:hover .text,
+body.dark .sidebar li button:hover .icon,
+body.dark .sidebar li button:hover .text {
     color: var(--text-color);
 }
 
@@ -515,7 +522,11 @@ body.dark .home .text {
     right: 7px;
 }
 
-.home .headerwrap .notificationsetting {}
+.home .headerwrap .notificationsetting button {
+    background: none;
+    border: none;
+    padding: 0;
+}
 
 .home .headerwrap .notificationsetting img {}
 
@@ -950,6 +961,18 @@ body.dark .home .text {
     position: relative;
     background: none;
     border: none;
+}
+
+.reportwrap .media-button {
+    display: block;
+    width: 100%;
+    padding: 0;
+    line-height: 0;
+    text-align: left;
+}
+
+.reportwrap .icon-menu-button {
+    padding: 0;
 }
 
 .reportwrap .show {

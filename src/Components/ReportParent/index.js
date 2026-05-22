@@ -18,14 +18,8 @@ const ReportParent = () => {
         <Tab sx={{fontSize:15}} label="Posts" />
         <Tab sx={{fontSize:15}}  label="Comments" />
         </Tabs>
-        {
-          value == 0 &&
-          <Report/>
-        }
-        {
-          value == 1 &&
-          <CommentReport/>
-        }
+        {value === 0 && <Report />}
+        {value === 1 && <CommentReport />}
         </div>
     )
 }

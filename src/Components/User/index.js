@@ -1,5 +1,4 @@
-import algoliasearch from "algoliasearch";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import InfiniteScroll from "react-infinite-scroll-component";
 import {
   collection,
@@ -8,7 +7,6 @@ import {
   orderBy,
   startAfter,
   limit,
-  where,
 } from "firebase/firestore";
 import { db } from "../../config/firebase-config";
 import { Button, LinearProgress, Typography } from "@mui/material";
@@ -25,6 +23,41 @@ const User = (props) => {
   const navigate = useNavigate();
   const location = useLocation();
   const state = location.state;
+
+  const fetchUsers = useCallback(async (lastDoc = null) => {
+    try {
+      let usersQuery;
+
+      if (lastDoc) {
+        usersQuery = query(
+          collection(db, "Users"),
+          orderBy("registredAt", "desc"),
+          startAfter(lastDoc),
+          limit(18)
+        );
+      } else {
+        usersQuery = query(
+          collection(db, "Users"),
+          orderBy("registredAt", "desc"),
+          limit(18)
+        );
+      }
+
+      const usersSnapshot = await getDocs(usersQuery);
+      const usersData = usersSnapshot.docs.map((doc) => doc.data());
+
+      setUsers((prevUsers) => [...prevUsers, ...usersData]);
+
+      const lastVisibleDoc = usersSnapshot.docs[usersSnapshot.docs.length - 1];
+      setLastVisible(lastVisibleDoc);
+      setHasMore(usersSnapshot.docs.length === 18);
+    } catch (error) {
+      console.error("Error fetching users:", error);
+      toast.error("Error loading users. Please refresh the page.");
+      setHasMore(false);
+    }
+  }, []);
+
   useEffect(() => {
     if (state) {
       setIsSearch(true);
@@ -41,7 +74,7 @@ const User = (props) => {
       // console.log("hereeee")
       fetchUsers();
     }
-  }, [state]);
+  }, [state, fetchUsers]);
   // useEffect(() => {
 
   // }, []); // Trigger fetchUsers when lastVisible changes
@@ -50,57 +83,15 @@ const User = (props) => {
     setIsSearch(false);
     setNoData(false);
     setUsers([]);
-    setTimeout(() => {
-      fetchUsers();
-    }, 1000);
-  };
-  const fetchUsers = async () => {
-    try {
-      // Define a query to order users by some field (e.g., createdAt)
-      let usersQuery;
-
-      // If there's a lastVisible document, start after it
-      if (lastVisible) {
-        // console.log("here")
-        usersQuery = query(
-          collection(db, "Users"),
-          orderBy("registredAt", "desc"),
-          startAfter(lastVisible),
-          limit(18)
-        );
-      } else {
-        usersQuery = query(
-          collection(db, "Users"),
-          orderBy("registredAt", "desc"),
-          limit(18)
-        );
-      }
-      // Execute the query
-      const usersSnapshot = await getDocs(usersQuery);
-
-      // Extract the users data
-      const usersData = usersSnapshot.docs.map((doc) => doc.data());
-      // console.log(usersData)
-      // Update the users state
-      setUsers((prevUsers) => [...prevUsers, ...usersData]);
-
-      // Update the lastVisible state for pagination
-      const lastVisibleDoc = usersSnapshot.docs[usersSnapshot.docs.length - 1];
-      setLastVisible(lastVisibleDoc);
-
-      // Check if there are more documents to load
-      setHasMore(usersSnapshot.docs.length === 18);
-    } catch (error) {
-      console.error("Error fetching users:", error);
-      toast.error("Error loading users. Please refresh the page.");
-      setHasMore(false);
-    }
+    setLastVisible(null);
+    setHasMore(true);
+    fetchUsers();
   };
   const fetchMoreData = async () => {
     // console.log("more", lastVisible, hasMore);
     // Fetch more users when scrolling down
     // This will trigger useEffect and fetch additional data
-    await fetchUsers();
+    await fetchUsers(lastVisible);
   };
 
   const handleClick = (event, user) => {
@@ -166,13 +157,12 @@ const User = (props) => {
           //scrollThreshold={0.9} // Load more data when 90% of the page is scrolled
         >
           <div className="row">
-            {users.map((user, index) => (
+            {users.map((user) => (
               <div
                 className="col-xxl-3 col-xl-3 col-lg-4 col-md-6"
                 key={user.uid}
-                onClick={(event) => handleClick(event, user)}
               >
-                <a href="">
+                <a href={`/user/${user.uid}`} onClick={(event) => handleClick(event, user)}>
                   <div className="userprofilewrap">
                     <div className="userimg">
                       <img

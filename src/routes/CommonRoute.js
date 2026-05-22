@@ -1,6 +1,5 @@
 import { Navigate } from "react-router-dom";
 import Header from "../Components/common/Header";
-import { auth } from "../config/firebase-config";
 import SideDrawer from "../Components/common/SideDrawer";
 import { useContext } from "react";
 import { Context } from "../Context/AuthContext";

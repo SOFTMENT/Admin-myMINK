@@ -8,7 +8,6 @@ import { CircularProgress } from "@mui/material";
 const Login = () => {
   const [email, setEmail] = useState("");
   const [pass, setPass] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const handleSubmit = (event) => {
